@@ -31,13 +31,7 @@ if (CLIENT) then
 		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdater" ) b:Spawn() end  
 		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdater" ) b:Spawn() end  
 		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdater" ) b:Spawn() end  
-		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdater" ) b:Spawn() end  
-		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdater" ) b:Spawn() end  
-		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdater" ) b:Spawn() end  
-		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdater" ) b:Spawn() end  
-		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdater" ) b:Spawn() end  
-		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdater" ) b:Spawn() end  
-		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdater" ) b:Spawn() end 
+		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdater" ) b:Spawn() end   
 		pseudoply:Spawn() 
 	end 
 	
