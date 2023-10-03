@@ -3,8 +3,64 @@
 CreateClientConVar(	"rtx_localplayershadow", 1,  true, false)
 CreateClientConVar(	"rtx_localweaponshadow", 0,  true, false)
 CreateClientConVar(	"rtx_disablevertexlighting", 0,  true, false) 
-CreateClientConVar(	"rtx_experimental_manuallight", 1,  true, false) 
+CreateClientConVar(	"rtx_experimental_manuallight", 0,  true, false) 
+CreateClientConVar(	"rtx_experimental_lightupdater", 1,  true, false) 
+CreateClientConVar(	"rtx_experimental_mightcrash_combinedlightingmode", 0,  false, false) 
 require("niknaks")
+
+
+ 
+
+local PrevCombinedLightingMode = false
+if (CLIENT) then
+	function RTXLoad()  
+		print("[RTX Fixes] - Initalising Client")
+		RunConsoleCommand("r_radiosity", "0")
+		RunConsoleCommand("r_PhysPropStaticLighting", "0")
+		RunConsoleCommand("r_colorstaticprops", "0")
+		RunConsoleCommand("mat_fullbright", GetConVar( "rtx_experimental_manuallight" ):GetBool())
+		pseudoply = ents.CreateClientside( "rtx_pseudoplayer" ) 
+		
+		-- the definition of insanity
+		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdater" ) b:Spawn() end  
+		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdater" ) b:Spawn() end  
+		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdater" ) b:Spawn() end  
+		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdater" ) b:Spawn() end  
+		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdater" ) b:Spawn() end  
+		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdater" ) b:Spawn() end  
+		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdater" ) b:Spawn() end  
+		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdater" ) b:Spawn() end  
+		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdater" ) b:Spawn() end  
+		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdater" ) b:Spawn() end  
+		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdater" ) b:Spawn() end  
+		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdater" ) b:Spawn() end  
+		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdater" ) b:Spawn() end  
+		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdater" ) b:Spawn() end  
+		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdater" ) b:Spawn() end  
+		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdater" ) b:Spawn() end 
+		pseudoply:Spawn() 
+	end 
+	
+	function PreRender()   
+		render.SuppressEngineLighting( GetConVar( "rtx_disablevertexlighting" ):GetBool() || GetConVar( "rtx_experimental_manuallight" ):GetBool())  
+		if (GetConVar( "rtx_experimental_mightcrash_combinedlightingmode" ):GetBool()) then 
+			render.SuppressEngineLighting(false)
+		end   
+		if (GetConVar( "rtx_experimental_manuallight" ):GetBool()) then DoCustomLights() end  
+		--PrintTable(stash[1])
+	end 
+	function PreRenderOpaque()  
+		if (GetConVar( "rtx_experimental_manuallight" ):GetBool()) then DoCustomLights() end 
+	end 
+	function RTXPreRenderTranslucent()  
+		if (GetConVar( "rtx_experimental_manuallight" ):GetBool()) then DoCustomLights() end 
+	end 
+	hook.Add( "InitPostEntity", "RTXReady", RTXLoad)  
+	hook.Add( "PreRender", "RTXPreRender", PreRender) 
+	hook.Add( "PreDrawOpaqueRenderables", "RTXPreRenderOpaque", PreRenderOpaque) 
+	hook.Add( "PreDrawTranslucentRenderables", "RTXPreRenderTranslucent", RTXPreRenderTranslucent) 
+end
+
 
 function values(t)
 	local i = 0
@@ -116,32 +172,4 @@ function DoCustomLights()
 		convertlight(stash[3]),
 		convertlight(stash[4]),  
 	}) 
-end
-
-if (CLIENT) then
-	function RTXLoad()  
-		print("[RTX Fixes] - Initalising Client")
-		RunConsoleCommand("r_radiosity", "0")
-		RunConsoleCommand("r_PhysPropStaticLighting", "0")
-		RunConsoleCommand("r_colorstaticprops", "0")
-		RunConsoleCommand("mat_fullbright", "1")
-		pseudoply = ents.CreateClientside( "rtx_pseudoplayer" ) 
-		pseudoply:Spawn() 
-	end 
-	
-	function PreRender()   
-		render.SuppressEngineLighting( GetConVar( "rtx_disablevertexlighting" ):GetBool() || GetConVar( "rtx_experimental_manuallight" ):GetBool())  
-		if (GetConVar( "rtx_experimental_manuallight" ):GetBool()) then DoCustomLights() end  
-		--PrintTable(stash[1])
-	end 
-	function PreRenderOpaque()  
-		if (GetConVar( "rtx_experimental_manuallight" ):GetBool()) then DoCustomLights() end 
-	end 
-	function RTXPreRenderTranslucent()  
-		if (GetConVar( "rtx_experimental_manuallight" ):GetBool()) then DoCustomLights() end 
-	end 
-	hook.Add( "InitPostEntity", "RTXReady", RTXLoad)  
-	hook.Add( "PreRender", "RTXPreRender", PreRender) 
-	hook.Add( "PreDrawOpaqueRenderables", "RTXPreRenderOpaque", PreRenderOpaque) 
-	hook.Add( "PreDrawTranslucentRenderables", "RTXPreRenderTranslucent", RTXPreRenderTranslucent) 
 end
