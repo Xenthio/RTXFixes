@@ -8,7 +8,7 @@ CreateClientConVar(	"rtx_experimental_lightupdater", 1,  true, false)
 CreateClientConVar(	"rtx_experimental_mightcrash_combinedlightingmode", 0,  false, false) 
 require("niknaks")
 
-
+halo.Add = function() end
  
 
 local PrevCombinedLightingMode = false
