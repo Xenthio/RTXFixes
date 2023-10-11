@@ -32,7 +32,7 @@ function ENT:Initialize()
     self:SetModel("models/props_junk/wood_crate001a.mdl") 
     --self:SetPos("LocalPlayer():GetPos()")
     self:SetRenderMode(2) 
-    self:SetColor(Color(255,255,255,0))
+    self:SetColor(Color(255,255,255,1))
 
 end
 function ENT:Think()

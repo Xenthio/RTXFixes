@@ -8,9 +8,9 @@ CreateClientConVar(	"rtx_experimental_lightupdater", 1,  true, false)
 CreateClientConVar(	"rtx_experimental_mightcrash_combinedlightingmode", 0,  false, false) 
 require("niknaks")
 
-halo.Add = function() end
+--halo.Add = function() end
  
-
+local flashlightent
 local PrevCombinedLightingMode = false
 if (CLIENT) then
 	function RTXLoad()  
@@ -19,6 +19,8 @@ if (CLIENT) then
 		RunConsoleCommand("r_PhysPropStaticLighting", "0")
 		RunConsoleCommand("r_colorstaticprops", "0")
 		RunConsoleCommand("mat_fullbright", GetConVar( "rtx_experimental_manuallight" ):GetBool())
+		
+
 		pseudoply = ents.CreateClientside( "rtx_pseudoplayer" ) 
 		
 		-- the definition of insanity
@@ -49,6 +51,7 @@ if (CLIENT) then
 	function RTXPreRenderTranslucent()  
 		if (GetConVar( "rtx_experimental_manuallight" ):GetBool()) then DoCustomLights() end 
 	end 
+	 
 	hook.Add( "InitPostEntity", "RTXReady", RTXLoad)  
 	hook.Add( "PreRender", "RTXPreRender", PreRender) 
 	hook.Add( "PreDrawOpaqueRenderables", "RTXPreRenderOpaque", PreRenderOpaque) 
