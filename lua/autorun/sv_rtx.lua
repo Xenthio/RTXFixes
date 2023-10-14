@@ -3,7 +3,7 @@ if (SERVER) then
 	function RTXLoadServer( ply )  
 		print("[RTX Fixes] - Initalising Server") 
 		
-		flashlightent = ents.Create( "rtx_flashlight" ) 
+		flashlightent = ents.Create( "rtx_flashlight_ent" ) 
 		flashlightent:SetOwner(ply)
 		flashlightent:Spawn() 
 	end 
