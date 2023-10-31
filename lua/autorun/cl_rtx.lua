@@ -18,6 +18,7 @@ if (CLIENT) then
 		RunConsoleCommand("r_radiosity", "0")
 		RunConsoleCommand("r_PhysPropStaticLighting", "0")
 		RunConsoleCommand("r_colorstaticprops", "0")
+		RunConsoleCommand("r_lightinterp", "0")
 		RunConsoleCommand("mat_fullbright", GetConVar( "rtx_experimental_manuallight" ):GetBool())
 		
 
