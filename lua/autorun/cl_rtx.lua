@@ -57,6 +57,17 @@ if (CLIENT) then
 	hook.Add( "PreRender", "RTXPreRender", PreRender) 
 	hook.Add( "PreDrawOpaqueRenderables", "RTXPreRenderOpaque", PreRenderOpaque) 
 	hook.Add( "PreDrawTranslucentRenderables", "RTXPreRenderTranslucent", RTXPreRenderTranslucent) 
+
+	
+	--function SupressLighting() 
+		--render.SuppressEngineLighting(true)
+		--render.SetAmbientLight( 0, 0, 0 )
+		--render.ResetModelLighting( 0, 0, 0 )
+	--end
+	--hook.Add( "PreDrawOpaqueRenderables", "RTXSupress1", SupressLighting) 
+	--hook.Add( "PreDrawTranslucentRenderables", "RTXSupress2", SupressLighting) 
+	--hook.Add( "PostDrawOpaqueRenderables", "RTXSupress3", SupressLighting) 
+	--hook.Add( "PostDrawTranslucentRenderables", "RTXSupress4", SupressLighting) 
 end
 
 
