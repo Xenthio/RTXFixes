@@ -1,5 +1,5 @@
 -- Shitty solution to have a shadow for the player
-CreateConVar( "rtx_allowrtxflashlight", 1,  false, false )
+CreateConVar( "rtx_allowrtxflashlight", 1, FCVAR_ARCHIVE )
 AddCSLuaFile()
 
 ENT.Type 			= "anim"

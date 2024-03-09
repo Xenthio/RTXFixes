@@ -1,5 +1,5 @@
 -- Shitty solution to have a shadow for the player
-CreateConVar( "rtx_debug_pseudoplayer", 0,  false, false )
+CreateConVar( "rtx_debug_pseudoplayer", 0,  FCVAR_ARCHIVE )
 AddCSLuaFile()
 
 ENT.Type 			= "anim"

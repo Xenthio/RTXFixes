@@ -1,5 +1,5 @@
 -- Shitty solution to have a shadow for the player
-CreateConVar( "rtx_debug_pseudoplayer", 0,  false, false )
+CreateConVar( "rtx_debug_pseudoplayer", 0,  FCVAR_ARCHIVE )
 AddCSLuaFile()
 
 ENT.Type 			= "anim"
@@ -35,16 +35,16 @@ function ENT:Initialize()
     self:SetColor(Color(255,255,255,1))
 
 end
-function ENT:Think()
-    --lights = NikNaks.CurrentMap:GetEntities()
-    lights = NikNaks.CurrentMap:FindByClass( "light" )
-	lights = TableConcat(lights,NikNaks.CurrentMap:FindByClass( "light_spot" ))
-	lights = TableConcat(lights,NikNaks.CurrentMap:FindByClass( "light_environment" ))
-	stash = shuffle(lights)
-    self:SetPos(stash[1].origin - (stash[1].angles:Forward() * 8)) 
-    self:SetRenderMode(2) 
-    self:SetColor(Color(255,255,255,1))
-end
+-- function ENT:Think()
+--     --lights = NikNaks.CurrentMap:GetEntities()
+--     lights = NikNaks.CurrentMap:FindByClass( "light" )
+-- 	lights = TableConcat(lights,NikNaks.CurrentMap:FindByClass( "light_spot" ))
+-- 	lights = TableConcat(lights,NikNaks.CurrentMap:FindByClass( "light_environment" ))
+-- 	stash = shuffle(lights)
+--     self:SetPos(stash[1].origin - (stash[1].angles:Forward() * 8)) 
+--     self:SetRenderMode(2) 
+--     self:SetColor(Color(255,255,255,1))
+-- end
 
 function ENT:OnRemove() 
 end
