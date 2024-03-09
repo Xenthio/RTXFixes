@@ -1,5 +1,5 @@
  
-CreateConVar( "rtx_experimental_lightupdater_count", 16,  FCVAR_ARCHIVE )
+CreateConVar( "rtx_experimental_lightupdater_count", 8,  FCVAR_ARCHIVE )
 AddCSLuaFile()
 
 ENT.Type 			= "anim"
