@@ -1,5 +1,6 @@
  
 CreateConVar( "rtx_experimental_lightupdater_count", 8,  FCVAR_ARCHIVE )
+CreateConVar( "rtx_experimental_lightupdater_show", 0,  FCVAR_ARCHIVE )
 AddCSLuaFile()
 
 ENT.Type 			= "anim"
@@ -28,7 +29,7 @@ end
 
 function ENT:Initialize() 
     print("[RTX Fixes] - Lightupdater Initialised.")
-    self:SetModel("models/props_junk/wood_crate001a.mdl") 
+    self:SetModel("models/hunter/blocks/cube025x025x025.mdl") 
     --self:SetPos("LocalPlayer():GetPos()")
     self:SetRenderMode(2) 
     self:SetColor(Color(255,255,255,1))
@@ -58,6 +59,9 @@ function ENT:Think()
             updater:SetPos(stash[i].origin - (stash[i].angles:Forward() * 8)) 
             updater:SetRenderMode(2) 
             updater:SetColor(Color(255,255,255,1))
+            if (GetConVar( "rtx_experimental_lightupdater_show" ):GetBool()) then
+                updater:SetRenderMode(0) 
+            end
         end
     end
 end
