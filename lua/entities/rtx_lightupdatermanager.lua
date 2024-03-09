@@ -10,8 +10,7 @@ ENT.Category		= "RTX"
 
 ENT.Spawnable		= false
 ENT.AdminSpawnable	= false
- 
-
+  
 
 function shuffle(tbl)
 	for i = #tbl, 2, -1 do
@@ -38,20 +37,23 @@ function ENT:Initialize()
 	self.lights = TableConcat(self.lights,NikNaks.CurrentMap:FindByClass( "light_spot" ))
 
 	self.Updaters = { }
-    for i = 1, GetConVar( "rtx_experimental_lightupdater_count" ):GetInt() do
+    for i = 1, math.min(GetConVar( "rtx_experimental_lightupdater_count" ):GetInt(), table.Count(self.lights)) do
         self.Updaters[i] = ents.CreateClientside( "rtx_lightupdater" ) 
         self.Updaters[i]:Spawn()
     end
 
+    self.doshuffle = true;
 end
 function ENT:Think()
     --lights = NikNaks.CurrentMap:GetEntities()
 	--lights = TableConcat(lights,NikNaks.CurrentMap:FindByClass( "light_environment" ))
-	stash = shuffle(self.lights)
+	if (self.doshuffle) then
+        stash = shuffle(self.lights)
+    end
     for i, updater in pairs(self.Updaters) do
         if (stash[i] == nil) then
             table.remove( self.Updaters, i )
-            updater:Remove()
+            updater:Remove() 
         else
             updater:SetPos(stash[i].origin - (stash[i].angles:Forward() * 8)) 
             updater:SetRenderMode(2) 

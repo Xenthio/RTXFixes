@@ -29,7 +29,7 @@ end
 
 function ENT:Initialize() 
     print("[RTX Fixes] - Lightupdater Initialised.")
-    self:SetModel("models/props_junk/wood_crate001a.mdl") 
+    self:SetModel("models/hunter/plates/plate.mdl") 
     --self:SetPos("LocalPlayer():GetPos()")
     self:SetRenderMode(2) 
     self:SetColor(Color(255,255,255,1))
