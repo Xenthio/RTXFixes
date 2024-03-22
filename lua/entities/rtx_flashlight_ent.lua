@@ -24,13 +24,14 @@ function ENT:Initialize()
 
 end
 function ENT:Think()
- 
-    if self:GetOwner() then
+    if (self:GetOwner() && self:GetOwner():IsValid()) then
         
  
         self:SetPos( self:GetOwner():GetPos() + self:GetOwner():GetViewOffset() + (self:GetOwner():GetAngles():Up()*32) )
         --self:SetPos(self:GetOwner():GetEyeTrace().HitPos)
  
+    elseif (CLIENT) then
+        self:SetOwner(LocalPlayer())
     end
     
 end
@@ -40,7 +41,7 @@ function ENT:OnRemove()
 end
 
 function ENT:Draw()
-    if self:GetOwner() then
+    if (self:GetOwner() && self:GetOwner():IsValid()) then
         
 
         self:SetAngles( self:GetOwner():GetAngles() )
