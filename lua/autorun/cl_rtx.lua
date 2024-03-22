@@ -8,8 +8,6 @@ CreateClientConVar(	"rtx_experimental_lightupdater", 1,  true, false)
 CreateClientConVar(	"rtx_experimental_mightcrash_combinedlightingmode", 0,  false, false) 
 require("niknaks")
 
-halo.Add = function() end
- 
 local flashlightent
 local PrevCombinedLightingMode = false
 if (CLIENT) then
@@ -27,6 +25,8 @@ if (CLIENT) then
 		-- the definition of insanity
 		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdatermanager" ) b:Spawn() end  
 		pseudoply:Spawn() 
+
+		halo.Add = function() end
 	end 
 	
 	function PreRender()   

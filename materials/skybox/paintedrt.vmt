@@ -1,7 +1,7 @@
 "UnlitGeneric"
 {
 	// Original shader: BaseTexture
-	"$basetexture" "skybox/constructskyboxft"
+	"$basetexture" "skybox/paintedrt"
 	"$nofog" 1
 	$ignorez 1
 }
