@@ -26,6 +26,8 @@ if (CLIENT) then
 		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdatermanager" ) b:Spawn() end  
 		pseudoply:Spawn() 
 
+		FixHashes()
+
 		halo.Add = function() end
 	end 
 	
@@ -88,6 +90,23 @@ function mysplit (inputstr, sep)
 			table.insert(t, str)
 	end
 	return t
+end
+
+function DrawFix( self )
+
+	self:DrawModel(STUDIO_RENDER + STUDIO_STATIC_LIGHTING)
+
+end
+function EnableHashFix(ent)
+	ent.RenderOverride = DrawFix
+end
+function FixHashes() 
+
+	hook.Add( "OnEntityCreated", "RTXFixHashesHook", EnableHashFix)
+	for k, v in pairs(ents.GetAll()) do
+		EnableHashFix(v)
+	end
+
 end
 
 function convertlight(v) 
