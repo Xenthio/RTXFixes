@@ -3,8 +3,9 @@
 Fixes for gmod that allow it to play nicer with RTX Remix.
 
 1. Player shadows
-2. Lamp Tool Fix
-3. Mesh Replacement Fixes
+2. Light Flicker Fixes
+3. Lamp Tool Fix
+4. Mesh Replacement Fixes
 
 https://steamcommunity.com/sharedfiles/filedetails/?id=3038853470
 
