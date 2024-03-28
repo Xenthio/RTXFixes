@@ -14,7 +14,7 @@ end
 
 function ENT:Initialize()
 
-	self:SetModel("models/props_junk/wood_crate001a.mdl")
+	self:SetModel("models/alyx.mdl")
 	if ( SERVER ) then
 
 		self:PhysicsInit( SOLID_VPHYSICS )
@@ -80,8 +80,47 @@ if ( SERVER ) then
 	end
 end
 
+--function ENT:Draw()
+
+	--self:DrawModel(STUDIO_RENDER + STUDIO_STATIC_LIGHTING)
+
+--end
+-- The default material to render with in case we for some reason don't have one
+local myMaterial = Material( "models/wireframe" ) -- models/debug/debugwhite
+
+function ENT:CreateMesh()
+	-- Destroy any previous meshes
+	if ( self.Mesh ) then self.Mesh:Destroy() end
+
+	-- Get a list of all meshes of a model
+	local visualMeshes = util.GetModelMeshes( self:GetModel() )
+
+	-- Check if the model even exists
+	if ( !visualMeshes ) then return end
+
+	-- Select the first mesh
+	local visualMesh = visualMeshes[ 1 ]
+
+	-- Set the material to draw the mesh with from the model data
+	myMaterial = Material( visualMesh.material )
+
+	-- You can apply any changes to visualMesh.verticies table here, distorting the mesh
+	-- or any other changes you can come up with
+
+	-- Create and build the mesh
+	self.Mesh = Mesh()
+	self.Mesh:BuildFromTriangles( visualMesh.triangles )
+end
+
+-- A special hook to override the normal mesh for rendering
+function ENT:GetRenderMesh()
+	-- If the mesh doesn't exist, create it!
+	if ( !self.Mesh ) then return self:CreateMesh() end
+
+	return { Mesh = self.Mesh, Material = myMaterial }
+end
+
 function ENT:Draw()
-
-	self:DrawModel(STUDIO_RENDER + STUDIO_STATIC_LIGHTING)
-
+	-- Draw the entity's model normally, this calls GetRenderMesh at some point
+	self:DrawModel()
 end

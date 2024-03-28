@@ -35,7 +35,9 @@ function ENT:Initialize()
     self:SetColor(Color(255,255,255,1))
 
 end
--- function ENT:Think()
+function ENT:Think()
+    
+    self.RenderOverride = nil
 --     --lights = NikNaks.CurrentMap:GetEntities()
 --     lights = NikNaks.CurrentMap:FindByClass( "light" )
 -- 	lights = TableConcat(lights,NikNaks.CurrentMap:FindByClass( "light_spot" ))
@@ -44,7 +46,12 @@ end
 --     self:SetPos(stash[1].origin - (stash[1].angles:Forward() * 8)) 
 --     self:SetRenderMode(2) 
 --     self:SetColor(Color(255,255,255,1))
--- end
+end
+
+function ENT:Draw() 
+	-- Draw the entity's model normally, this calls GetRenderMesh at some point
+	self:DrawModel() 
+end
 
 function ENT:OnRemove() 
 end

@@ -2,7 +2,8 @@
 
 CreateClientConVar(	"rtx_localplayershadow", 1,  true, false)
 CreateClientConVar(	"rtx_localweaponshadow", 0,  true, false)
-CreateClientConVar(	"rtx_disablevertexlighting", 0,  true, false) 
+CreateClientConVar(	"rtx_disablevertexlighting", 1,  true, false) 
+CreateClientConVar(	"rtx_disablevertexlighting_old", 0,  true, false) 
 CreateClientConVar(	"rtx_experimental_manuallight", 0,  true, false) 
 CreateClientConVar(	"rtx_experimental_lightupdater", 1,  true, false) 
 CreateClientConVar(	"rtx_experimental_mightcrash_combinedlightingmode", 0,  false, false) 
@@ -32,7 +33,7 @@ if (CLIENT) then
 	end 
 	
 	function PreRender()   
-		render.SuppressEngineLighting( GetConVar( "rtx_disablevertexlighting" ):GetBool() || GetConVar( "rtx_experimental_manuallight" ):GetBool())  
+		render.SuppressEngineLighting( GetConVar( "rtx_disablevertexlighting_old" ):GetBool() || GetConVar( "rtx_experimental_manuallight" ):GetBool())  
 		if (GetConVar( "rtx_experimental_mightcrash_combinedlightingmode" ):GetBool()) then 
 			render.SuppressEngineLighting(false)
 		end   
@@ -92,9 +93,11 @@ function mysplit (inputstr, sep)
 	return t
 end
 
-function DrawFix( self, flags )
 
-	self:DrawModel(flags + STUDIO_STATIC_LIGHTING)
+function DrawFix( self, flags )
+    render.SuppressEngineLighting( GetConVar( "rtx_disablevertexlighting" ):GetBool() )
+	self:DrawModel(flags + STUDIO_STATIC_LIGHTING) 
+    render.SuppressEngineLighting( false )
 
 end
 function EnableHashFix(ent)
