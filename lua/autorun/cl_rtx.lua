@@ -92,9 +92,9 @@ function mysplit (inputstr, sep)
 	return t
 end
 
-function DrawFix( self )
+function DrawFix( self, flags )
 
-	self:DrawModel(STUDIO_RENDER + STUDIO_STATIC_LIGHTING)
+	self:DrawModel(flags + STUDIO_STATIC_LIGHTING)
 
 end
 function EnableHashFix(ent)
