@@ -176,29 +176,31 @@ end
 function ENT:Draw()
 
     render.SuppressEngineLighting( true )
-    --local newlight = {}
-	--newlight.type = MATERIAL_LIGHT_SPOT
-	--newlight.color = self:GetColor()
-	--newlight.pos = LightPos
-	--newlight.innerAngle = self:GetLightFOV()
-	--newlight.outerAngle = self:GetLightFOV()
-  --  newlight.range = self:GetDistance()
-	--newlight.angularFalloff = v._exponent
-	--newlight.quadraticFalloff = v._quadratic_attn
-	--newlight.linearFalloff = v._linear_attn
-	--newlight.constantFalloff = v._constant_attn
-	--newlight.dir = self:GetAngles()
-    --render.SetLocalModelLights({newlight})
-	local c = self:GetColor()
-    render.SetLocalModelLights({{
-        type = MATERIAL_LIGHT_SPOT,
-        dir = self:GetAngles():Forward(),
-        innerAngle = self:GetLightFOV()- 25,
-        outerAngle = self:GetLightFOV(),
-        color = Vector(c.r,c.g,c.b) * self:GetBrightness(),
-        pos = self:GetPos() + (self:GetAngles():Forward()*16),
-        range = self:GetDistance(),
-    }})
+	if (self:GetOn()) then 
+		--local newlight = {}
+		--newlight.type = MATERIAL_LIGHT_SPOT
+		--newlight.color = self:GetColor()
+		--newlight.pos = LightPos
+		--newlight.innerAngle = self:GetLightFOV()
+		--newlight.outerAngle = self:GetLightFOV()
+		--newlight.range = self:GetDistance()
+		--newlight.angularFalloff = v._exponent
+		--newlight.quadraticFalloff = v._quadratic_attn
+		--newlight.linearFalloff = v._linear_attn
+		--newlight.constantFalloff = v._constant_attn
+		--newlight.dir = self:GetAngles()
+		--render.SetLocalModelLights({newlight})
+		local c = self:GetColor()
+		render.SetLocalModelLights({{
+			type = MATERIAL_LIGHT_SPOT,
+			dir = self:GetAngles():Forward(),
+			innerAngle = self:GetLightFOV()- 25,
+			outerAngle = self:GetLightFOV(),
+			color = Vector(c.r,c.g,c.b) * self:GetBrightness(),
+			pos = self:GetPos() + (self:GetAngles():Forward()*16),
+			range = self:GetDistance(),
+		}})
+	end
 	-- Draw the model
 	self:DrawModel()
     render.SuppressEngineLighting( false )
