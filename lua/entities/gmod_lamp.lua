@@ -49,6 +49,7 @@ function ENT:Initialize()
 		self.PixVis = util.GetPixelVisibleHandle()
 
 	end
+	self.RenderOverride = nil
 
 end
 
