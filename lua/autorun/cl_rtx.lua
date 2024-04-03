@@ -95,6 +95,7 @@ end
 
 
 function DrawFix( self, flags )
+    if (GetConVar( "mat_fullbright" ):GetBool()) then return end
     render.SuppressEngineLighting( GetConVar( "rtx_disablevertexlighting" ):GetBool() )
 	self:DrawModel(flags + STUDIO_STATIC_LIGHTING) 
     render.SuppressEngineLighting( false )

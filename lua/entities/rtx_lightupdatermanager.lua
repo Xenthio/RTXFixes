@@ -28,7 +28,8 @@ function TableConcat(t1,t2)
 end
 
 function ENT:Initialize() 
-    print("[RTX Fixes] - Lightupdater Initialised.")
+    if (GetConVar( "mat_fullbright" ):GetBool()) then return end
+    print("[RTX Fixes] - Lightupdater Initialised.") 
     self:SetModel("models/hunter/blocks/cube025x025x025.mdl") 
     --self:SetPos("LocalPlayer():GetPos()")
     self:SetRenderMode(2) 
@@ -46,6 +47,10 @@ function ENT:Initialize()
     self.doshuffle = true;
 end
 function ENT:Think()
+    if (GetConVar( "mat_fullbright" ):GetBool()) then 
+        table.remove( self.Updaters, i )
+        updater:Remove() 
+    end
     --lights = NikNaks.CurrentMap:GetEntities()
 	--lights = TableConcat(lights,NikNaks.CurrentMap:FindByClass( "light_environment" ))
 	if (self.doshuffle) then
