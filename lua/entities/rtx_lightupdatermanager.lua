@@ -46,18 +46,19 @@ function ENT:Initialize()
 
     self.doshuffle = true;
 end
-function ENT:Think()
-    if (GetConVar( "mat_fullbright" ):GetBool()) then 
-        table.remove( self.Updaters, i )
-        updater:Remove() 
-    end
+function ENT:Think()  
     --lights = NikNaks.CurrentMap:GetEntities()
 	--lights = TableConcat(lights,NikNaks.CurrentMap:FindByClass( "light_environment" ))
+    
+    if (self.Updaters == nil) then
+        self:Remove() 
+    end
+    
 	if (self.doshuffle) then
         stash = shuffle(self.lights)
     end
     for i, updater in pairs(self.Updaters) do
-        if (stash[i] == nil) then
+        if (stash[i] == nil || GetConVar( "mat_fullbright" ):GetBool()) then
             table.remove( self.Updaters, i )
             updater:Remove() 
         else
