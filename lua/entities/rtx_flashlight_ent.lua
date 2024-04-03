@@ -24,6 +24,7 @@ function ENT:Initialize()
 
 end
 function ENT:Think()
+	self.RenderOverride = nil
     if (self:GetOwner() && self:GetOwner():IsValid()) then
         
  
