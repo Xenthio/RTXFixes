@@ -13,11 +13,13 @@ ENT.AdminSpawnable	= false
 
 local pseudoweapon
 local pseudoplayer
+local materialsset
 
 function ENT:Initialize()
     if pseudoplayer then
         pseudoplayer:Remove()
     end
+    materialsset = false
     RunConsoleCommand("r_flashlightnear", "50")
 
     print("[RTX Fixes] - Pseudoplayer Initialised.")
@@ -35,8 +37,105 @@ function ENT:Initialize()
     pseudoweapon:Spawn() 
     pseudoweapon:SetParent(pseudoplayer)
 
+   
+    
 end
+
+-- local test = false 
+function MaterialSet()
+    if (!pseudoplayer) then return end
+    if (materialsset) then return end
+    print("hi")
+    materialsset = true
+    cam.Start2D()
+    render.SetViewPort(0,0,512,512)
+    for k, v in pairs(pseudoplayer:GetMaterials()) do
+        mat = Material(v)
+        tex = mat:GetTexture( "$basetexture" )
+        tex:Download()
+        newtex = GetRenderTarget( "pseudoplayertexture" .. k, tex:Width(), tex:Height() )
+        render.ClearRenderTarget( newtex, Color( 0, 0, 0, 255 ) )
+        render.PushRenderTarget( newtex )
+        --render.DrawTextureToScreen( tex )
+
+        col = Color( 0, 0, 0, 1 )
+        --render.DrawQuadEasy( Vector(0,0,0), Vector(0,0,1), 1, 1, col )
+        --render.SetMaterial( Material( "color" ) )
+	    --render.DrawScreenQuad()
+	    --render.DrawScreenQuadEx(100,100,256,256)
+
+        --render.CopyTexture( tex, newtex )
+        --render.BlurRenderTarget( newtex, 1, 1, 1 )
+        render.PopRenderTarget()
+        
+ 
+        kv = {
+            ["$basetexture"] = newtex:GetName(),
+            ["$model"] = 1,
+            ["$translucent"] = 1,
+            ["$vertexalpha"] = 1,
+            ["$vertexcolor"] = 1
+        }
+        --kv = mat:GetKeyValues()
+        --kv["$basetexture"] = newtex:GetName()
+        matlua = CreateMaterial( "pseudoplayermaterial" .. k, mat:GetShader(), kv )
+        matlua:SetTexture( "$basetexture", newtex )
+        --print("hi")
+        pseudoplayer:SetSubMaterial(k, "!pseudoplayermaterial" .. k)
+        --render.DrawTextureToScreen( newtex )
+        
+		--pseudoplayer:SetMaterial( "!pseudoplayermaterial" .. k )
+    end
+    cam.End2D()
+end
+-- local test = false 
+-- hook.Add("DrawOverlay", "TEstTex", function()
+    
+--     if (!pseudoplayer) then return end
+--     print("hi")
+--     if (test) then return end
+--     test = true
+--     for k, v in pairs(pseudoplayer:GetMaterials()) do
+--         mat = Material(v)
+--         tex = mat:GetTexture( "$basetexture" )
+--         tex:Download()
+--         newtex = GetRenderTarget( "pseudoplayertexture" .. k, tex:Width(), tex:Height() )
+--         render.ClearRenderTarget( newtex, Color( 0, 0, 0, 255 ) )
+--         render.PushRenderTarget( newtex )
+--         --render.DrawTextureToScreen( tex )
+
+--         col = Color( 0, 0, 0, 1 )
+--         --render.DrawQuadEasy( Vector(0,0,0), Vector(0,0,1), 1, 1, col )
+--         --render.SetMaterial( Material( "color" ) )
+-- 	    --render.DrawScreenQuad()
+-- 	    --render.DrawScreenQuadEx(100,100,256,256)
+
+--         --render.CopyTexture( tex, newtex )
+--         --render.BlurRenderTarget( newtex, 1, 1, 1 )
+--         render.PopRenderTarget()
+        
+ 
+--         kv = {
+--             ["$basetexture"] = newtex:GetName(),
+--             ["$model"] = 1,
+--             ["$translucent"] = 1,
+--             ["$vertexalpha"] = 1,
+--             ["$vertexcolor"] = 1
+--         }
+--         --kv = mat:GetKeyValues()
+--         --kv["$basetexture"] = newtex:GetName()
+--         matlua = CreateMaterial( "pseudoplayermaterial" .. k, mat:GetShader(), kv )
+--         matlua:SetTexture( "$basetexture", newtex )
+--         --print("hi")
+--         pseudoplayer:SetSubMaterial(k, "!pseudoplayermaterial" .. k)
+--         --render.DrawTextureToScreen( newtex )
+        
+-- 		--pseudoplayer:SetMaterial( "!pseudoplayermaterial" .. k )
+--     end
+-- end )
+
 function ENT:Think()
+    MaterialSet()
     if not pseudoplayer or not pseudoplayer:IsValid() or pseudoplayer == nil then
         pseudoplayer = ClientsideModel(LocalPlayer():GetModel())
         pseudoplayer:SetMoveType(MOVETYPE_NONE)
