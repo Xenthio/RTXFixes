@@ -176,6 +176,8 @@ function ENT:Think()
         pseudoplayer:SetModel(LocalPlayer():GetModel())
         pseudoplayer:SetParent(self)
         pseudoplayer:AddEffects( EF_BONEMERGE )
+        
+        MaterialSet()
     end
     for k = 1, LocalPlayer():GetNumBodyGroups() do
         pseudoplayer:SetBodygroup(k, LocalPlayer():GetBodygroup(k))
