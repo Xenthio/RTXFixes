@@ -34,6 +34,101 @@ function ENT:Initialize()
     pseudoweapon = ClientsideModel(weaponmodel)
     pseudoweapon:SetParent(self)
     pseudoweapon:AddEffects( EF_BONEMERGE ) 
+    pseudoweapon.RenderOverride = PseudoweaponRender
+end
+
+local materialtable = {}
+function PseudoweaponRender(self) 
+    
+
+    if (!materialtable) then return end
+    if (!GetConVar( "rtx_pseudoweapon_unique_hashes" ):GetBool()) then 
+        render.ModelMaterialOverride(nil,nil)
+        render.SuppressEngineLighting( true )
+        self:DrawModel()
+        render.SuppressEngineLighting( false )
+        return
+    else
+        --render.MaterialOverride(nil)
+        for k, v in pairs(materialtable) do
+    
+            --print(k)
+            --self:SetSubMaterial(k, "!pseudoplayermaterial" .. k)
+            render.MaterialOverrideByIndex( k-1, v ) 
+            --render.ModelMaterialOverride( Material("!pseudoplayermaterial" .. k))
+        end
+        render.SuppressEngineLighting( true )
+        self:DrawModel()
+        render.SuppressEngineLighting( false )
+        render.ModelMaterialOverride(nil,nil)
+    end 
+    
+end
+
+
+local function MaterialSet()
+    if (!pseudoweapon) then return end 
+    pseudoweapon.RenderOverride = PseudoweaponRender 
+    for k, v in pairs(pseudoweapon:GetMaterials()) do
+        local mat = Material(v)
+        local tex = mat:GetTexture( "$basetexture" )   
+
+        local clr = Material( "color" )
+        tex:Download()
+        clr:SetTexture( "$basetexture", tex )
+        local newtex = GetRenderTargetEx( "pseudoweapontexture" .. k, tex:Width(), tex:Height(), RT_SIZE_LITERAL, MATERIAL_RT_DEPTH_NONE, 0, 0, IMAGE_FORMAT_RGBA8888 ) 
+        render.PushRenderTarget( newtex )
+            cam.Start2D()
+                render.OverrideAlphaWriteEnable( true, true )
+                --render.SuppressEngineLighting( true )
+                render.ClearDepth()
+                render.Clear( 0, 0, 0, 0 )
+
+                render.SetMaterial( clr )
+	            render.DrawScreenQuad() 
+
+                local texturedQuadStructure = {
+                    texture = surface.GetTextureID( "vgui/gradv" ),
+                    color   = Color( 255, 255, 255, 50 ),
+                    x 	= 0,
+                    y 	= 0,
+                    w 	= 1,
+                    h 	= 1,
+                } 
+                draw.TexturedQuad( texturedQuadStructure )
+                
+                render.SetMaterial( clr ) 
+                --render.SuppressEngineLighting( false )
+                render.OverrideAlphaWriteEnable( false )
+            cam.End2D()
+             
+            local data = render.Capture({
+                format = "png",
+                x = 0, 
+                y = 0, 
+                h = newtex:Height(), 
+                w = newtex:Width() ,
+                alpha = false
+            })	
+            local pictureFile = file.Open( "pseudoweapontexture" .. k .. ".png", "wb", "DATA" )	
+            pictureFile:Write( data )
+            pictureFile:Close() 
+        render.PopRenderTarget()
+        --print("hi")
+                --util.Hi()
+        local kv = mat:GetKeyValues()
+        --kv["$basetexture"] = newtex:GetName()
+        --matlua = CreateMaterial( "pseudoplayermaterial" .. k, mat:GetShader(), kv )
+        local matimg = Material( "data/pseudoweapontexture" .. k .. ".png", "smooth vertexlitgeneric")
+        local matlua = CreateMaterial( "pseudoweaponmaterial" .. k, mat:GetShader(), kv )
+        --matlua:SetTexture( "$basetexture", newtex )
+        local newertex = matimg:GetTexture( "$basetexture" )
+        matlua:SetTexture( "$basetexture", newertex)
+        --matlua:SetTexture( "$basetexture", newtex )
+        --newertex = matlua:GetTexture( "$basetexture" )
+        --mat:SetTexture( "$basetexture", newertex)
+        materialtable[k] = matlua
+    end
 end
 
 function ENT:Think()
@@ -57,7 +152,7 @@ function ENT:Think()
 
     if LocalPlayer():GetActiveWeapon():IsValid() and pseudoweapon != nil and LocalPlayer():Alive() then
         pcall(function() LocalPlayer():GetActiveWeapon():DrawWorldModel() end)
-        if prevclassname != LocalPlayer():GetActiveWeapon():GetClass() or LocalPlayer():GetActiveWeapon():GetModel() != self:GetModel() then
+        if prevclassname != LocalPlayer():GetActiveWeapon():GetClass() then--or LocalPlayer():GetActiveWeapon():GetModel() != self:GetModel() then
             prevclassname = LocalPlayer():GetActiveWeapon():GetClass()
             self:RemoveEffects( EF_BONEMERGE )
             self:SetModel(LocalPlayer():GetActiveWeapon():GetModel())
@@ -73,6 +168,8 @@ function ENT:Think()
             pseudoweapon:SetModel(LocalPlayer():GetActiveWeapon():GetModel())
             pseudoweapon:SetParent(self)
             pseudoweapon:AddEffects( EF_BONEMERGE )
+            MaterialSet()
+             
         end
         self:SetRenderOrigin(LocalPlayer():GetActiveWeapon():GetRenderOrigin())
         self:SetRenderAngles(LocalPlayer():GetActiveWeapon():GetRenderAngles())
@@ -115,10 +212,6 @@ function ENT:OnRemove()
     end
 end
 -- remove on auto refresh
-hook.Add("OnReloaded", "RTXOnAutoReloadPseudoplayer", function()
-    if pseudoweapon then
-        pseudoweapon:Remove()
-    end
+hook.Add("OnReloaded", "RTXOnAutoReloadPseudoweapon", function()
     ENT:Remove()
 end)
-

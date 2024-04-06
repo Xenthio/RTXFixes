@@ -41,6 +41,9 @@ function ENT:Initialize()
     
 end
 
+local materialtable = {}
+local materialsset = false
+
 function PseudoplayerRender(self) 
     
 
@@ -69,10 +72,9 @@ function PseudoplayerRender(self)
 end
 
 -- local test = false 
-function MaterialSet()
+local function MaterialSet()
     if (!pseudoplayer) then return end
     if (materialsset) then return end
-    materialtable = {}
     pseudoplayer.RenderOverride = PseudoplayerRender
     materialsset = true
     for k, v in pairs(pseudoplayer:GetMaterials()) do
@@ -105,7 +107,6 @@ function MaterialSet()
                 draw.TexturedQuad( texturedQuadStructure )
                 
                 render.SetMaterial( clr )
-
                 --render.SuppressEngineLighting( false )
                 render.OverrideAlphaWriteEnable( false )
             cam.End2D()
@@ -116,13 +117,14 @@ function MaterialSet()
             pictureFile:Close() 
         render.PopRenderTarget()
 
-        kv = mat:GetKeyValues()
+        local kv = mat:GetKeyValues()
         --kv["$basetexture"] = newtex:GetName()
         --matlua = CreateMaterial( "pseudoplayermaterial" .. k, mat:GetShader(), kv )
-        matlua = Material( "data/pseudoplayertexture" .. k .. ".png", "smooth vertexlitgeneric")
+        local matimg = Material( "data/pseudoplayertexture" .. k .. ".png", "smooth vertexlitgeneric")
+        local matlua = CreateMaterial( "pseudoplayermaterial" .. k, mat:GetShader(), kv )
         --matlua:SetTexture( "$basetexture", newtex )
-        --newertex = matlua:GetTexture( "$basetexture" )
-        --mat:SetTexture( "$basetexture", newertex)
+        local newertex = matimg:GetTexture( "$basetexture" )
+        matlua:SetTexture( "$basetexture", newertex)
         materialtable[k] = matlua
     end
 end
@@ -150,7 +152,7 @@ function ENT:Think()
         end
 
     else 
-        if not (pseudoweapon or pseudoweapon:IsValid()) then
+        if (!pseudoweapon or !pseudoweapon:IsValid()) then
             pseudoweapon = ents.CreateClientside( "rtx_pseudoweapon" )
             pseudoweapon:Spawn()
         end
@@ -187,3 +189,8 @@ function ENT:OnRemove()
         pseudoweapon:Remove()
     end
 end
+-- remove on auto refresh
+hook.Add("OnReloaded", "RTXOnAutoReloadPseudoplayer", function()
+    ENT:Remove()
+end)
+
