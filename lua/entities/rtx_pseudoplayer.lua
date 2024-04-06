@@ -1,5 +1,6 @@
 -- Shitty solution to have a shadow for the player
-CreateConVar( "rtx_debug_pseudoplayer", 0,  FCVAR_ARCHIVE )
+CreateConVar( "rtx_debug_pseudoplayer", 0,  FCVAR_ARCHIVE ) 
+CreateClientConVar(	"rtx_pseudoplayer_unique_hashes", 0,  true, false)
 AddCSLuaFile()
 
 ENT.Type 			= "anim"
@@ -32,12 +33,38 @@ function ENT:Initialize()
     pseudoplayer:SetMoveType(MOVETYPE_NONE)
     pseudoplayer:SetParent(self)
     pseudoplayer:AddEffects( EF_BONEMERGE )
+    pseudoplayer.RenderOverride = PseudoplayerRender
 
     pseudoweapon = ents.CreateClientside( "rtx_pseudoweapon" )
     pseudoweapon:Spawn() 
     pseudoweapon:SetParent(pseudoplayer)
+    
+end
 
-   
+function PseudoplayerRender(self) 
+    
+
+    if (!materialtable) then return end
+    if (!GetConVar( "rtx_pseudoplayer_unique_hashes" ):GetBool()) then 
+        render.ModelMaterialOverride(nil,nil)
+        render.SuppressEngineLighting( true )
+        self:DrawModel()
+        render.SuppressEngineLighting( false )
+        return
+    else
+        --render.MaterialOverride(nil)
+        for k, v in pairs(materialtable) do
+    
+            --print(k)
+            --self:SetSubMaterial(k, "!pseudoplayermaterial" .. k)
+            render.MaterialOverrideByIndex( k-1, v ) 
+            --render.ModelMaterialOverride( Material("!pseudoplayermaterial" .. k))
+        end
+        render.SuppressEngineLighting( true )
+        self:DrawModel()
+        render.SuppressEngineLighting( false )
+        render.ModelMaterialOverride(nil,nil)
+    end 
     
 end
 
@@ -45,96 +72,56 @@ end
 function MaterialSet()
     if (!pseudoplayer) then return end
     if (materialsset) then return end
-    print("hi")
+    materialtable = {}
+    pseudoplayer.RenderOverride = PseudoplayerRender
     materialsset = true
-    cam.Start2D()
-    render.SetViewPort(0,0,512,512)
     for k, v in pairs(pseudoplayer:GetMaterials()) do
-        mat = Material(v)
-        tex = mat:GetTexture( "$basetexture" )
+        local mat = Material(v)
+        local tex = mat:GetTexture( "$basetexture" )   
+
+        local clr = Material( "color" )
+        clr:SetTexture( "$basetexture", tex )
         tex:Download()
-        newtex = GetRenderTarget( "pseudoplayertexture" .. k, tex:Width(), tex:Height() )
-        render.ClearRenderTarget( newtex, Color( 0, 0, 0, 255 ) )
+        local newtex = GetRenderTargetEx( "pseudoplayertexture" .. k, tex:Width(), tex:Height(), RT_SIZE_LITERAL, MATERIAL_RT_DEPTH_NONE, 0, 0, IMAGE_FORMAT_RGBA16161616F ) 
         render.PushRenderTarget( newtex )
-        --render.DrawTextureToScreen( tex )
+            cam.Start2D()
+                render.OverrideAlphaWriteEnable( true, true )
+                --render.SuppressEngineLighting( true )
+                render.ClearDepth()
+                render.Clear( 0, 0, 0, 0 )
 
-        col = Color( 0, 0, 0, 1 )
-        --render.DrawQuadEasy( Vector(0,0,0), Vector(0,0,1), 1, 1, col )
-        --render.SetMaterial( Material( "color" ) )
-	    --render.DrawScreenQuad()
-	    --render.DrawScreenQuadEx(100,100,256,256)
+                render.SetMaterial( clr )
+	            render.DrawScreenQuad() 
 
-        --render.CopyTexture( tex, newtex )
-        --render.BlurRenderTarget( newtex, 1, 1, 1 )
+                local texturedQuadStructure = {
+                    texture = surface.GetTextureID( "vgui/gradv" ),
+                    color   = Color( 255, 255, 255, 50 ),
+                    x 	= 0,
+                    y 	= 0,
+                    w 	= 1,
+                    h 	= 1
+                }
+                
+                draw.TexturedQuad( texturedQuadStructure )
+                
+                render.SetMaterial( clr )
+
+                --render.SuppressEngineLighting( false )
+                render.OverrideAlphaWriteEnable( false ) 
+            cam.End2D()
+        render.CopyRenderTargetToTexture( newtex )
         render.PopRenderTarget()
-        
- 
-        kv = {
-            ["$basetexture"] = newtex:GetName(),
-            ["$model"] = 1,
-            ["$translucent"] = 1,
-            ["$vertexalpha"] = 1,
-            ["$vertexcolor"] = 1
-        }
-        --kv = mat:GetKeyValues()
+
+        kv = mat:GetKeyValues()
         --kv["$basetexture"] = newtex:GetName()
         matlua = CreateMaterial( "pseudoplayermaterial" .. k, mat:GetShader(), kv )
         matlua:SetTexture( "$basetexture", newtex )
-        --print("hi")
-        pseudoplayer:SetSubMaterial(k, "!pseudoplayermaterial" .. k)
-        --render.DrawTextureToScreen( newtex )
-        
-		--pseudoplayer:SetMaterial( "!pseudoplayermaterial" .. k )
+        --mat:SetTexture( "$basetexture", newtex )
+        materialtable[k] = matlua
     end
-    cam.End2D()
 end
--- local test = false 
--- hook.Add("DrawOverlay", "TEstTex", function()
-    
---     if (!pseudoplayer) then return end
---     print("hi")
---     if (test) then return end
---     test = true
---     for k, v in pairs(pseudoplayer:GetMaterials()) do
---         mat = Material(v)
---         tex = mat:GetTexture( "$basetexture" )
---         tex:Download()
---         newtex = GetRenderTarget( "pseudoplayertexture" .. k, tex:Width(), tex:Height() )
---         render.ClearRenderTarget( newtex, Color( 0, 0, 0, 255 ) )
---         render.PushRenderTarget( newtex )
---         --render.DrawTextureToScreen( tex )
 
---         col = Color( 0, 0, 0, 1 )
---         --render.DrawQuadEasy( Vector(0,0,0), Vector(0,0,1), 1, 1, col )
---         --render.SetMaterial( Material( "color" ) )
--- 	    --render.DrawScreenQuad()
--- 	    --render.DrawScreenQuadEx(100,100,256,256)
-
---         --render.CopyTexture( tex, newtex )
---         --render.BlurRenderTarget( newtex, 1, 1, 1 )
---         render.PopRenderTarget()
-        
- 
---         kv = {
---             ["$basetexture"] = newtex:GetName(),
---             ["$model"] = 1,
---             ["$translucent"] = 1,
---             ["$vertexalpha"] = 1,
---             ["$vertexcolor"] = 1
---         }
---         --kv = mat:GetKeyValues()
---         --kv["$basetexture"] = newtex:GetName()
---         matlua = CreateMaterial( "pseudoplayermaterial" .. k, mat:GetShader(), kv )
---         matlua:SetTexture( "$basetexture", newtex )
---         --print("hi")
---         pseudoplayer:SetSubMaterial(k, "!pseudoplayermaterial" .. k)
---         --render.DrawTextureToScreen( newtex )
-        
--- 		--pseudoplayer:SetMaterial( "!pseudoplayermaterial" .. k )
---     end
--- end )
-
-function ENT:Think()
+function ENT:Think() 
     MaterialSet()
     if not pseudoplayer or not pseudoplayer:IsValid() or pseudoplayer == nil then
         pseudoplayer = ClientsideModel(LocalPlayer():GetModel())
