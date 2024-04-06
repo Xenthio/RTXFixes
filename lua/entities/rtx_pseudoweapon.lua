@@ -107,8 +107,8 @@ local function MaterialSet()
                 x = 0, 
                 y = 0, 
                 h = newtex:Height(), 
-                w = newtex:Width() ,
-                alpha = false
+                w = newtex:Width(),
+                alpha = true
             })	
             local pictureFile = file.Open( "pseudoweapontexture" .. k .. ".png", "wb", "DATA" )	
             pictureFile:Write( data )
