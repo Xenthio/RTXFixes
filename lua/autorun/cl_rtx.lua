@@ -27,7 +27,7 @@ if (CLIENT) then
 		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdatermanager" ) b:Spawn() end  
 		pseudoply:Spawn() 
 
-		FixHashes()
+		ApplyRenderOverrides()
 
 		halo.Add = function() end
 	end 
@@ -97,18 +97,24 @@ end
 function DrawFix( self, flags )
     if (GetConVar( "mat_fullbright" ):GetBool()) then return end
     render.SuppressEngineLighting( GetConVar( "rtx_disablevertexlighting" ):GetBool() )
-	self:DrawModel(flags + STUDIO_STATIC_LIGHTING) 
+
+	if (self:GetMaterial()) then -- Fixes material tool and lua SetMaterial
+		render.MaterialOverride(Material(self:GetMaterial()))
+	end
+
+	self:DrawModel(flags + STUDIO_STATIC_LIGHTING) -- Fix hash instability
+	render.MaterialOverride(nil)
     render.SuppressEngineLighting( false )
 
 end
-function EnableHashFix(ent)
+function ApplyRenderOverride(ent)
 	ent.RenderOverride = DrawFix
 end
-function FixHashes() 
+function ApplyRenderOverrides() 
 
-	hook.Add( "OnEntityCreated", "RTXFixHashesHook", EnableHashFix)
+	hook.Add( "OnEntityCreated", "RTXApplyRenderOverrides", ApplyRenderOverride)
 	for k, v in pairs(ents.GetAll()) do
-		EnableHashFix(v)
+		ApplyRenderOverride(v)
 	end
 
 end

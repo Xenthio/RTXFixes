@@ -32,8 +32,7 @@ if ( SERVER ) then
 	function ENT:Think()
 
 		self.BaseClass.Think( self )
-		self:SetSubMaterial( 1, "color" )
-		self:SetMaterial( "color" )
+		print(self:GetMaterial())
 
 	end
 end
