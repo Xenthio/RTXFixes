@@ -23,6 +23,10 @@ if (CLIENT) then
 
 		pseudoply = ents.CreateClientside( "rtx_pseudoplayer" ) 
 		
+		flashlightent = ents.CreateClientside( "rtx_flashlight_ent" ) 
+		flashlightent:SetOwner(ply)
+		flashlightent:Spawn() 
+
 		-- the definition of insanity
 		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdatermanager" ) b:Spawn() end  
 		pseudoply:Spawn() 

@@ -13,14 +13,12 @@ ENT.AdminSpawnable	= false
   
 function ENT:Initialize() 
     print("[RTX Fixes] - Flashlight Initialised.")
-    if (SERVER) then
- 
-        self:SetModel("models/hunter/blocks/cube075x2x075.mdl") 
-        self:SetRenderMode(2) 
-        self:SetColor(Color(255,255,255,1))
-        --self:PhysicsInit(SOLID_VPHYSICS)
-        --SetSpawnflags( L, self:GetLightModels(), self:GetLightWorld() )  
-    end
+    self:SetModel("models/hunter/blocks/cube075x2x075.mdl") 
+    self:SetRenderMode(2) 
+    self:SetColor(Color(255,255,255,1))
+    --self:PhysicsInit(SOLID_VPHYSICS)
+    --SetSpawnflags( L, self:GetLightModels(), self:GetLightWorld() )  
+    
 
 end
 function ENT:Think()
@@ -52,7 +50,7 @@ function ENT:Draw()
 
 	--Draw3DText( self.Entity:GetPos() + (self.Entity:GetAngles():Forward()*8), self.Entity:GetAngles(), 0.2, "hi", false )
     render.SuppressEngineLighting( true )
-    render.DrawLine(self.Entity:GetPos(), self.Entity:GetPos() + (self.Entity:GetAngles():Forward()*16), color_white)
+    --render.DrawLine(self.Entity:GetPos(), self.Entity:GetPos() + (self.Entity:GetAngles():Forward()*16), color_white)
     brightness = 0
     
     if (self:GetOwner():FlashlightIsOn()) then
@@ -64,7 +62,7 @@ function ENT:Draw()
         innerAngle = 15,
         outerAngle = 60,
         color = Vector(255,255,255) * brightness,
-        pos = self:GetPos() + (self:GetAngles():Forward()*16) + (self:GetAngles():Up()*-64),
+        pos = self:GetOwner():EyePos() + (self:GetAngles():Forward()*20),
         range = 512,
     }})
 
