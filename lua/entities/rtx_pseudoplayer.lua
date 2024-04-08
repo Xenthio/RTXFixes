@@ -3,6 +3,7 @@ CreateConVar( "rtx_debug_pseudoplayer", 0,  FCVAR_ARCHIVE )
 CreateClientConVar(	"rtx_pseudoplayer_unique_hashes", 0,  true, false)
 CreateClientConVar(	"rtx_pseudoplayer_offset_localangles", 0,  true, false)
 CreateClientConVar(	"rtx_pseudoplayer_offset_x", 0,  true, false)
+CreateClientConVar(	"rtx_pseudoplayer_offset_z", 0,  true, false)
 AddCSLuaFile()
 
 ENT.Type 			= "anim"
@@ -48,6 +49,7 @@ local materialsset = false
 
 function PseudoplayerRender(self) 
     
+    OffsetStuff()
 
     if (!materialtable) then return end
     
@@ -72,6 +74,28 @@ function PseudoplayerRender(self)
         render.ModelMaterialOverride(nil,nil)
     end 
     
+end
+
+function OffsetStuff()
+    if (GetConVar("rtx_pseudoplayer_offset_localangles"):GetBool()) then
+        LocalPlayer():SetAngles(LocalPlayer():GetRenderAngles())
+        local angles = LocalPlayer():GetRenderAngles()
+        local localangle = LocalPlayer():EyeAngles()
+        localangle.pitch = 0
+        
+        --localangle:Normalize()
+        local posoffset = localangle:Forward() * GetConVar("rtx_pseudoplayer_offset_x"):GetFloat()
+        
+        posoffset = posoffset + localangle:Up() * GetConVar("rtx_pseudoplayer_offset_z"):GetFloat()
+        local worldposoffset = LocalPlayer():GetPos() + posoffset
+        local localposoffset = LocalPlayer():WorldToLocal( worldposoffset )
+        LocalPlayer():ManipulateBonePosition(0,localposoffset)
+
+        local localangleoffset = Angle(angles.yaw - localangle.yaw, 0, 0)
+        LocalPlayer():ManipulateBoneAngles(0,-1 *localangleoffset)
+    else
+        LocalPlayer():ManipulateBonePosition(0,Vector(GetConVar("rtx_pseudoplayer_offset_x"):GetFloat(),0,0))
+    end
 end
 
 -- local test = false 
@@ -210,23 +234,7 @@ function ENT:Think()
 
     
     
-    if (GetConVar("rtx_pseudoplayer_offset_localangles"):GetBool()) then
-        LocalPlayer():SetAngles(LocalPlayer():GetRenderAngles())
-        local angles = LocalPlayer():GetRenderAngles()
-        local localangle = LocalPlayer():EyeAngles()
-        localangle.pitch = 0
-        
-        --localangle:Normalize()
-        local posoffset = localangle:Forward() * GetConVar("rtx_pseudoplayer_offset_x"):GetFloat()
-        local worldposoffset = LocalPlayer():GetPos() + posoffset
-        local localposoffset = LocalPlayer():WorldToLocal( worldposoffset )
-        LocalPlayer():ManipulateBonePosition(0,localposoffset)
-
-        local localangleoffset = Angle(angles.yaw - localangle.yaw, 0, 0)
-        LocalPlayer():ManipulateBoneAngles(0,-1 *localangleoffset)
-    else
-        LocalPlayer():ManipulateBonePosition(0,Vector(GetConVar("rtx_pseudoplayer_offset_x"):GetFloat(),0,0))
-    end
+    
      
 
 
