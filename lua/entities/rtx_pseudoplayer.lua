@@ -117,23 +117,17 @@ local function MaterialSet()
         local mat = Material(v)
         local tex = mat:GetTexture( "$basetexture" )   
  
-
 	-- create a copy so we can have the texture be drawn unlit.
         local matblank = CreateMaterial( "pseudoplayermaterialtemp" .. k, "UnlitGeneric", {
             ["$basetexture"] = "color/white",
             ["$model"] = 1,
             ["$translucent"] = 0,
-            ["$vertexalpha"] = 0,
-            ["$vertexcolor"] = 0,  
         } )
-
 	-- we need to create a second material so we can write the alpha, since gmod doesnt do it properly for some reason.
         local matblankalpha = CreateMaterial( "pseudoplayermaterialtempalpha" .. k, "UnlitGeneric", {
             ["$basetexture"] = "color/white",
             ["$model"] = 1,
             ["$translucent"] = 1,
-            ["$vertexalpha"] = 0,
-            ["$vertexcolor"] = 0,  
         } )
         matblank:SetTexture( "$basetexture", tex )
         matblankalpha:SetTexture( "$basetexture", tex )
@@ -153,11 +147,10 @@ local function MaterialSet()
 
 		-- Draw the base texture (alpha on all pixels is 0)
                 render.SetMaterial( matblank )
-	            render.DrawScreenQuad() 
-
+	        render.DrawScreenQuad() 
 		-- overlay the properly transparent texture (gives it alpha where its supposed to have it)
                 render.SetMaterial( matblankalpha )
-	            render.DrawScreenQuad() 
+	        render.DrawScreenQuad() 
 
 		-- Change the texture the tiniest amount.
                 local texturedQuadStructure = {
@@ -186,7 +179,6 @@ local function MaterialSet()
             local pictureFile = file.Open( texname .. ".png", "wb", "DATA" )	
             pictureFile:Write( data )
             pictureFile:Close() 
-		
         render.PopRenderTarget()
 
 	-- load our written texture as a material so its an actual texture.
