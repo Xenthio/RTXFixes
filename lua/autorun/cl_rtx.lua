@@ -14,6 +14,10 @@ local PrevCombinedLightingMode = false
 if (CLIENT) then
 	function RTXLoad()  
 		print("[RTX Fixes] - Initalising Client")
+		if (render.SupportsVertexShaders_2_0()) then
+			print("[RTX Fixes] - No RTX Remix Detected! Disabling!")
+			return
+		end
 		RunConsoleCommand("r_radiosity", "0")
 		RunConsoleCommand("r_PhysPropStaticLighting", "0")
 		RunConsoleCommand("r_colorstaticprops", "0")
@@ -37,6 +41,10 @@ if (CLIENT) then
 	end 
 	
 	function PreRender()   
+		
+		if (render.SupportsVertexShaders_2_0()) then 
+			return
+		end
 		render.SuppressEngineLighting( GetConVar( "rtx_disablevertexlighting_old" ):GetBool() || GetConVar( "rtx_experimental_manuallight" ):GetBool())  
 		if (GetConVar( "rtx_experimental_mightcrash_combinedlightingmode" ):GetBool()) then 
 			render.SuppressEngineLighting(false)
@@ -45,9 +53,15 @@ if (CLIENT) then
 		--PrintTable(stash[1])
 	end 
 	function PreRenderOpaque()  
+		if (render.SupportsVertexShaders_2_0()) then 
+			return
+		end
 		if (GetConVar( "rtx_experimental_manuallight" ):GetBool()) then DoCustomLights() end 
 	end 
 	function RTXPreRenderTranslucent()  
+		if (render.SupportsVertexShaders_2_0()) then 
+			return
+		end
 		if (GetConVar( "rtx_experimental_manuallight" ):GetBool()) then DoCustomLights() end 
 	end 
 	 
