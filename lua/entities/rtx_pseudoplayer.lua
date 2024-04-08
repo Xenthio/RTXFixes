@@ -80,19 +80,37 @@ local function MaterialSet()
     for k, v in pairs(pseudoplayer:GetMaterials()) do
         local mat = Material(v)
         local tex = mat:GetTexture( "$basetexture" )   
+ 
 
-        local clr = Material( "color" )
-        clr:SetTexture( "$basetexture", tex )
-        tex:Download()
+        local matblank = CreateMaterial( "pseudoplayermaterialtemp" .. k, "UnlitGeneric", {
+            ["$basetexture"] = "color/white",
+            ["$model"] = 1,
+            ["$translucent"] = 0,
+            ["$vertexalpha"] = 0,
+            ["$vertexcolor"] = 0,  
+        } )
+        local matblankalpha = CreateMaterial( "pseudoplayermaterialtempalpha" .. k, "UnlitGeneric", {
+            ["$basetexture"] = "color/white",
+            ["$model"] = 1,
+            ["$translucent"] = 1,
+            ["$vertexalpha"] = 0,
+            ["$vertexcolor"] = 0,  
+        } )
+        matblank:SetTexture( "$basetexture", tex )
+        matblankalpha:SetTexture( "$basetexture", tex )
+        
         local newtex = GetRenderTargetEx( "pseudoplayertexture" .. k, tex:Width(), tex:Height(), RT_SIZE_LITERAL, MATERIAL_RT_DEPTH_NONE, 0, 0, IMAGE_FORMAT_RGBA8888 ) 
         render.PushRenderTarget( newtex )
             cam.Start2D()
                 render.OverrideAlphaWriteEnable( true, true )
+                render.SetWriteDepthToDestAlpha( false )
                 --render.SuppressEngineLighting( true )
                 render.ClearDepth()
                 render.Clear( 0, 0, 0, 0 )
 
-                render.SetMaterial( clr )
+                render.SetMaterial( matblank )
+	            render.DrawScreenQuad() 
+                render.SetMaterial( matblankalpha )
 	            render.DrawScreenQuad() 
 
                 local texturedQuadStructure = {
@@ -105,13 +123,19 @@ local function MaterialSet()
                 }
                 
                 draw.TexturedQuad( texturedQuadStructure )
-                
-                render.SetMaterial( clr )
+                 
                 --render.SuppressEngineLighting( false )
                 render.OverrideAlphaWriteEnable( false )
             cam.End2D()
              
-            local data = render.Capture({ format = "png", x = 0, y = 0, h = newtex:Height(), w = newtex:Width() })	
+            local data = render.Capture({
+                format = "png",
+                x = 0, 
+                y = 0, 
+                h = tex:Height(), 
+                w = tex:Width(),
+                alpha = true
+            })
             local pictureFile = file.Open( "pseudoplayertexture" .. k .. ".png", "wb", "DATA" )	
             pictureFile:Write( data )
             pictureFile:Close() 

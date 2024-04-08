@@ -74,18 +74,35 @@ local function MaterialSet()
         local mat = Material(v)
         local tex = mat:GetTexture( "$basetexture" )   
 
-        local clr = Material( "color" )
+        local matblank = CreateMaterial( "pseudoweaponmaterialtemp" .. k, "UnlitGeneric", {
+            ["$basetexture"] = "color/white",
+            ["$model"] = 1,
+            ["$translucent"] = 0,
+            ["$vertexalpha"] = 0,
+            ["$vertexcolor"] = 0,  
+        } )
+        local matblankalpha = CreateMaterial( "pseudoweaponmaterialtempalpha" .. k, "UnlitGeneric", {
+            ["$basetexture"] = "color/white",
+            ["$model"] = 1,
+            ["$translucent"] = 1,
+            ["$vertexalpha"] = 0,
+            ["$vertexcolor"] = 0,  
+        } )
+        matblank:SetTexture( "$basetexture", tex )
+        matblankalpha:SetTexture( "$basetexture", tex )
+
         tex:Download()
-        clr:SetTexture( "$basetexture", tex )
         local newtex = GetRenderTargetEx( "pseudoweapontexture" .. k, tex:Width(), tex:Height(), RT_SIZE_LITERAL, MATERIAL_RT_DEPTH_NONE, 0, 0, IMAGE_FORMAT_RGBA8888 ) 
         render.PushRenderTarget( newtex )
             cam.Start2D()
                 render.OverrideAlphaWriteEnable( true, true )
-                --render.SuppressEngineLighting( true )
-                render.ClearDepth()
+                render.SetWriteDepthToDestAlpha( false )
+                --render.SuppressEngineLighting( true ) 
                 render.Clear( 0, 0, 0, 0 )
 
-                render.SetMaterial( clr )
+                render.SetMaterial( matblank )
+	            render.DrawScreenQuad() 
+                render.SetMaterial( matblankalpha )
 	            render.DrawScreenQuad() 
 
                 local texturedQuadStructure = {
@@ -97,18 +114,18 @@ local function MaterialSet()
                     h 	= 1,
                 } 
                 draw.TexturedQuad( texturedQuadStructure )
-                
-                render.SetMaterial( clr ) 
+                 
                 --render.SuppressEngineLighting( false )
                 render.OverrideAlphaWriteEnable( false )
             cam.End2D()
              
+            render.SetWriteDepthToDestAlpha( false )
             local data = render.Capture({
                 format = "png",
                 x = 0, 
                 y = 0, 
-                h = newtex:Height(), 
-                w = newtex:Width(),
+                h = tex:Height(), 
+                w = tex:Width(),
                 alpha = true
             })	
             local pictureFile = file.Open( "pseudoweapontexture" .. k .. ".png", "wb", "DATA" )	
@@ -117,7 +134,7 @@ local function MaterialSet()
         render.PopRenderTarget()
         --print("hi")
                 --util.Hi()
-        local kv = mat:GetKeyValues()
+        local kv = mat:GetKeyValues() 
         --kv["$basetexture"] = newtex:GetName()
         --matlua = CreateMaterial( "pseudoplayermaterial" .. k, mat:GetShader(), kv )
         local matimg = Material( "data/pseudoweapontexture" .. k .. ".png", "smooth vertexlitgeneric")
