@@ -92,7 +92,8 @@ local function MaterialSet()
         matblankalpha:SetTexture( "$basetexture", tex )
 
         tex:Download()
-        local newtex = GetRenderTargetEx( "pseudoweapontexture" .. k, tex:Width(), tex:Height(), RT_SIZE_LITERAL, MATERIAL_RT_DEPTH_NONE, 0, 0, IMAGE_FORMAT_RGBA8888 ) 
+        local texname = "pseudoweapontexture" .. k .. tex:Width() .. "x" .. tex:Height() -- we need to create one unique for different widths and heights.
+        local newtex = GetRenderTargetEx( texname, tex:Width(), tex:Height(), RT_SIZE_LITERAL, MATERIAL_RT_DEPTH_NONE, 0, 0, IMAGE_FORMAT_RGBA8888 ) 
         render.PushRenderTarget( newtex )
             cam.Start2D()
                 render.OverrideAlphaWriteEnable( true, true )
@@ -124,16 +125,16 @@ local function MaterialSet()
                 format = "png",
                 x = 0, 
                 y = 0, 
-                h = tex:Height(), 
-                w = tex:Width(),
+                h = newtex:Height(), 
+                w = newtex:Width(),
                 alpha = true
             })	
-            local pictureFile = file.Open( "pseudoweapontexture" .. k .. ".png", "wb", "DATA" )	
+            local pictureFile = file.Open( texname .. ".png", "wb", "DATA" )	
             pictureFile:Write( data )
             pictureFile:Close() 
         render.PopRenderTarget()
         
-        local matimg = Material( "data/pseudoweapontexture" .. k .. ".png")
+        local matimg = Material( "data/" .. texname .. ".png")
         local newertex = matimg:GetTexture( "$basetexture" )
         
         local kv = mat:GetKeyValues() 

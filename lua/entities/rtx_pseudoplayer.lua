@@ -99,7 +99,8 @@ local function MaterialSet()
         matblank:SetTexture( "$basetexture", tex )
         matblankalpha:SetTexture( "$basetexture", tex )
         
-        local newtex = GetRenderTargetEx( "pseudoplayertexture" .. k, tex:Width(), tex:Height(), RT_SIZE_LITERAL, MATERIAL_RT_DEPTH_NONE, 0, 0, IMAGE_FORMAT_RGBA8888 ) 
+        local texname = "pseudoplayertexture" .. k .. tex:Width() .. "x" .. tex:Height() -- we need to create one unique for different widths and heights.
+        local newtex = GetRenderTargetEx( texname, tex:Width(), tex:Height(), RT_SIZE_LITERAL, MATERIAL_RT_DEPTH_NONE, 0, 0, IMAGE_FORMAT_RGBA8888 ) 
         render.PushRenderTarget( newtex )
             cam.Start2D()
                 render.OverrideAlphaWriteEnable( true, true )
@@ -132,16 +133,16 @@ local function MaterialSet()
                 format = "png",
                 x = 0, 
                 y = 0, 
-                h = tex:Height(), 
-                w = tex:Width(),
+                h = newtex:Height(), 
+                w = newtex:Width(),
                 alpha = true
             })
-            local pictureFile = file.Open( "pseudoplayertexture" .. k .. ".png", "wb", "DATA" )	
+            local pictureFile = file.Open( texname .. ".png", "wb", "DATA" )	
             pictureFile:Write( data )
             pictureFile:Close() 
         render.PopRenderTarget()
 
-        local matimg = Material( "data/pseudoplayertexture" .. k .. ".png")
+        local matimg = Material( "data/" .. texname .. ".png")
         local newertex = matimg:GetTexture( "$basetexture" )
         
         local kv = mat:GetKeyValues() 
@@ -201,8 +202,7 @@ function ENT:Think()
         pseudoplayer:SetParent(self)
         pseudoplayer:AddEffects( EF_BONEMERGE )
         
-        materialsset = false
-        MaterialSet()
+        materialsset = false 
     end
     for k = 1, LocalPlayer():GetNumBodyGroups() do
         pseudoplayer:SetBodygroup(k, LocalPlayer():GetBodygroup(k))
