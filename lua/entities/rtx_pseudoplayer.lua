@@ -141,14 +141,14 @@ local function MaterialSet()
             pictureFile:Close() 
         render.PopRenderTarget()
 
-        local kv = mat:GetKeyValues()
-        --kv["$basetexture"] = newtex:GetName()
-        --matlua = CreateMaterial( "pseudoplayermaterial" .. k, mat:GetShader(), kv )
-        local matimg = Material( "data/pseudoplayertexture" .. k .. ".png", "smooth vertexlitgeneric")
-        local matlua = CreateMaterial( "pseudoplayermaterial" .. k, mat:GetShader(), kv )
-        --matlua:SetTexture( "$basetexture", newtex )
+        local matimg = Material( "data/pseudoplayertexture" .. k .. ".png")
         local newertex = matimg:GetTexture( "$basetexture" )
+        
+        local kv = mat:GetKeyValues() 
+        local matlua = CreateMaterial( "pseudoplayermaterial" .. k, mat:GetShader(), kv )
         matlua:SetTexture( "$basetexture", newertex)
+        matlua:SetVector("$color2", kv["$color2"]) 
+
         materialtable[k] = matlua
     end
 end
@@ -201,6 +201,7 @@ function ENT:Think()
         pseudoplayer:SetParent(self)
         pseudoplayer:AddEffects( EF_BONEMERGE )
         
+        materialsset = false
         MaterialSet()
     end
     for k = 1, LocalPlayer():GetNumBodyGroups() do

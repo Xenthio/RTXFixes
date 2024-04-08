@@ -132,19 +132,14 @@ local function MaterialSet()
             pictureFile:Write( data )
             pictureFile:Close() 
         render.PopRenderTarget()
-        --print("hi")
-                --util.Hi()
-        local kv = mat:GetKeyValues() 
-        --kv["$basetexture"] = newtex:GetName()
-        --matlua = CreateMaterial( "pseudoplayermaterial" .. k, mat:GetShader(), kv )
-        local matimg = Material( "data/pseudoweapontexture" .. k .. ".png", "smooth vertexlitgeneric")
-        local matlua = CreateMaterial( "pseudoweaponmaterial" .. k, mat:GetShader(), kv )
-        --matlua:SetTexture( "$basetexture", newtex )
+        
+        local matimg = Material( "data/pseudoweapontexture" .. k .. ".png")
         local newertex = matimg:GetTexture( "$basetexture" )
+        
+        local kv = mat:GetKeyValues() 
+        local matlua = CreateMaterial( "pseudoweaponmaterial" .. k, mat:GetShader(), kv )
         matlua:SetTexture( "$basetexture", newertex)
-        --matlua:SetTexture( "$basetexture", newtex )
-        --newertex = matlua:GetTexture( "$basetexture" )
-        --mat:SetTexture( "$basetexture", newertex)
+
         materialtable[k] = matlua
     end
 end
