@@ -7,6 +7,7 @@ Fixes for gmod that allow it to play nicer with RTX Remix.
 3. Lamp Tool Fix
 4. Mesh Replacement Fixes (Makes hashes stable and some compatible with portalrtx)
 5. RTX fixed construct map (Functional mirrors and better skybox)
+6. Unique hashes for own player.
 
 https://steamcommunity.com/sharedfiles/filedetails/?id=3038853470
 

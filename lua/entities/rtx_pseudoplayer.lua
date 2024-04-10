@@ -47,34 +47,6 @@ end
 local materialtable = {}
 local materialsset = false
 
-function PseudoplayerRender(self) 
-    
-    OffsetStuff()
-
-    if (!materialtable) then return end
-    
-    if (!GetConVar( "rtx_pseudoplayer_unique_hashes" ):GetBool()) then 
-        render.ModelMaterialOverride(nil,nil)
-        render.SuppressEngineLighting( true )
-        self:DrawModel()
-        render.SuppressEngineLighting( false )
-        return
-    else
-        --render.MaterialOverride(nil)
-        for k, v in pairs(materialtable) do
-    
-            --print(k)
-            --self:SetSubMaterial(k, "!pseudoplayermaterial" .. k)
-            render.MaterialOverrideByIndex( k-1, v ) 
-            --render.ModelMaterialOverride( Material("!pseudoplayermaterial" .. k))
-        end
-        render.SuppressEngineLighting( true )
-        self:DrawModel()
-        render.SuppressEngineLighting( false )
-        render.ModelMaterialOverride(nil,nil)
-    end 
-    
-end
 
 function OffsetStuff()
     if (GetConVar("rtx_pseudoplayer_offset_localangles"):GetBool()) then
@@ -98,49 +70,89 @@ function OffsetStuff()
     end
 end
 
--- local test = false 
+-- We use this to override materials in dx7 mode.
+function PseudoplayerRender(self) 
+
+    -- guy wanted offsets so he could use the addon with gmod legs 3, we do them here.
+    OffsetStuff()
+
+    if (!materialtable) then return end
+    
+    if (!GetConVar( "rtx_pseudoplayer_unique_hashes" ):GetBool()) then 
+        render.ModelMaterialOverride(nil,nil)
+        render.SuppressEngineLighting( true )
+        self:DrawModel()
+        render.SuppressEngineLighting( false )
+        return
+    else
+        for k, v in pairs(materialtable) do
+
+	    -- SetMaterial and SetSubMaterial don't work in dx8 or dx7 mode, luckily render.MaterialOverride does.
+	    -- Workaround for issue: https://github.com/Facepunch/garrysmod-issues/issues/5826
+            render.MaterialOverrideByIndex( k-1, v ) 
+			
+        end
+        render.SuppressEngineLighting( true )
+        self:DrawModel()
+        render.SuppressEngineLighting( false )
+        render.ModelMaterialOverride(nil,nil)
+    end 
+    
+end
+
+
+-- This fucking piece of shit allows us to have a slighly modified texture for the local player.
+-- This is so we can have it be invisible but still cast shadows and draw in reflections, while not making other players invisible.
 local function MaterialSet()
     if (!pseudoplayer) then return end
     if (materialsset) then return end
+	
+    -- Workaround for issue: https://github.com/Facepunch/garrysmod-issues/issues/5826
     pseudoplayer.RenderOverride = PseudoplayerRender
+
+    -- this is set to false on hotload.
     materialsset = true
+	
     for k, v in pairs(pseudoplayer:GetMaterials()) do
         local mat = Material(v)
         local tex = mat:GetTexture( "$basetexture" )   
  
-
+	-- create a copy so we can have the texture be drawn unlit.
         local matblank = CreateMaterial( "pseudoplayermaterialtemp" .. k, "UnlitGeneric", {
             ["$basetexture"] = "color/white",
             ["$model"] = 1,
             ["$translucent"] = 0,
-            ["$vertexalpha"] = 0,
-            ["$vertexcolor"] = 0,  
         } )
+	-- we need to create a second material so we can write the alpha, since gmod doesnt do it properly for some reason.
         local matblankalpha = CreateMaterial( "pseudoplayermaterialtempalpha" .. k, "UnlitGeneric", {
             ["$basetexture"] = "color/white",
             ["$model"] = 1,
             ["$translucent"] = 1,
-            ["$vertexalpha"] = 0,
-            ["$vertexcolor"] = 0,  
         } )
         matblank:SetTexture( "$basetexture", tex )
         matblankalpha:SetTexture( "$basetexture", tex )
         
         local texname = "pseudoplayertexture" .. k .. tex:Width() .. "x" .. tex:Height() -- we need to create one unique for different widths and heights.
         local newtex = GetRenderTargetEx( texname, tex:Width(), tex:Height(), RT_SIZE_LITERAL, MATERIAL_RT_DEPTH_NONE, 0, 0, IMAGE_FORMAT_RGBA8888 ) 
+		
         render.PushRenderTarget( newtex )
             cam.Start2D()
                 render.OverrideAlphaWriteEnable( true, true )
+
+		-- Workaround for issue: https://github.com/Facepunch/garrysmod-issues/issues/2571
                 render.SetWriteDepthToDestAlpha( false )
-                --render.SuppressEngineLighting( true )
+		
                 render.ClearDepth()
                 render.Clear( 0, 0, 0, 0 )
 
+		-- Draw the base texture (alpha on all pixels is 0)
                 render.SetMaterial( matblank )
-	            render.DrawScreenQuad() 
+	        render.DrawScreenQuad() 
+		-- overlay the properly transparent texture (gives it alpha where its supposed to have it)
                 render.SetMaterial( matblankalpha )
-	            render.DrawScreenQuad() 
+	        render.DrawScreenQuad() 
 
+		-- Change the texture the tiniest amount.
                 local texturedQuadStructure = {
                     texture = surface.GetTextureID( "vgui/gradv" ),
                     color   = Color( 255, 255, 255, 50 ),
@@ -152,10 +164,10 @@ local function MaterialSet()
                 
                 draw.TexturedQuad( texturedQuadStructure )
                  
-                --render.SuppressEngineLighting( false )
                 render.OverrideAlphaWriteEnable( false )
             cam.End2D()
-             
+
+	    -- We cant take our rendertarget and convert it to a texture, so we need to be evil and write to disk :(
             local data = render.Capture({
                 format = "png",
                 x = 0, 
@@ -169,14 +181,20 @@ local function MaterialSet()
             pictureFile:Close() 
         render.PopRenderTarget()
 
+	-- load our written texture as a material so its an actual texture.
         local matimg = Material( "data/" .. texname .. ".png")
         local newertex = matimg:GetTexture( "$basetexture" )
-        
+
+	-- Create our final material, since we need custom keyvalues and we cant do that when we make a material from a png. so instead we copy the texture from above.
         local kv = mat:GetKeyValues() 
         local matlua = CreateMaterial( "pseudoplayermaterial" .. k, mat:GetShader(), kv )
         matlua:SetTexture( "$basetexture", newertex)
+
+	-- this is the only keyvalue not copied for some reason??
         matlua:SetVector("$color2", kv["$color2"]) 
 
+	-- add them to the table, we apply the new material every frame in the RenderOverride, since Entity:SetMaterial() is broken in dx7 mode.
+	-- Workaround for issue: https://github.com/Facepunch/garrysmod-issues/issues/5826
         materialtable[k] = matlua
     end
 end
