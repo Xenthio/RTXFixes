@@ -122,7 +122,7 @@ function ENT:Draw()
 			--innerAngle = self:GetLightFOV()- 25,
 			--outerAngle = self:GetLightFOV(),
 			color = Vector(c.r,c.g,c.b) * self:GetBrightness(),
-			pos = self:GetPos() + (self:GetAngles():Forward()*16),
+			pos = self:GetPos() + (self:GetAngles():Up()*-6),
 			range = self:GetLightSize(),
 		}})
 	end
