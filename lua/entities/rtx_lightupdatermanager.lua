@@ -52,6 +52,7 @@ function ENT:Think()
     
     if (self.Updaters == nil) then
         self:Remove() 
+        return
     end
     
 	if (self.doshuffle) then
