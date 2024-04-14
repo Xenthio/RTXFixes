@@ -2,12 +2,12 @@
 {
 	$basetexture "particle/fire_burning_character/fire_burning_character"
 	$additive 1
-	$vertexalpha 0
-	$vertexcolor 0
+	$vertexalpha 1
+	$vertexcolor 1
 
-	$overbrightfactor 5
-	$startfadesize 0.75
-	$endfadesize 0.84
+	$overbrightfactor 5.75
+	$startfadesize 0.45
+	$endfadesize 0.575
 	$blendframes 1
 	$depthblend 1
 }
