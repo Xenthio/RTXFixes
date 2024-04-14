@@ -1,5 +1,3 @@
-
-
 CreateClientConVar(	"rtx_localplayershadow", 1,  true, false)
 CreateClientConVar(	"rtx_localweaponshadow", 0,  true, false)
 CreateClientConVar(	"rtx_disablevertexlighting", 1,  true, false) 
