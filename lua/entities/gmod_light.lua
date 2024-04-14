@@ -121,6 +121,7 @@ function ENT:Draw()
 			--dir = self:GetAngles():Forward(),
 			--innerAngle = self:GetLightFOV()- 25,
 			--outerAngle = self:GetLightFOV(),
+			-- todo fix brightness
 			color = Vector(c.r,c.g,c.b) * self:GetBrightness(),
 			pos = self:GetPos() + (self:GetAngles():Up()*-6),
 			range = self:GetLightSize(),
