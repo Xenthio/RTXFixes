@@ -137,12 +137,13 @@ function MaterialFixups()
 
 	FixupWater()
 
+	-- giving things a real texture makes remix less confused
 	FixupGUIMaterial(Material("vgui/white"), "materials/vgui/white.vmt")
 	FixupGUIMaterial(Material("vgui/white_additive"), "materials/vgui/white_additive.vmt") 
 	FixupGUIMaterial(Material("vgui/black"), "materials/vgui/black.vmt")
 	FixupGUIMaterial(Material("white"), "white")
 	FixupGUIMaterial(Material("VGUI_White"), "VGUI_White")
-	FixupGUIMaterial(Material("!VGUI_White"), "VGUI_White")
+	FixupGUIMaterial(Material("!VGUI_White"), "VGUI_White") -- Dynamically created in vgui2.dll I think.
 	FixupGUIMaterial(Material("!white"), "white")
 	WantsMaterialFixup = false
 end
