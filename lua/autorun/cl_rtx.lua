@@ -7,6 +7,7 @@ CreateClientConVar(	"rtx_experimental_lightupdater", 1,  true, false)
 CreateClientConVar(	"rtx_experimental_mightcrash_combinedlightingmode", 0,  false, false) 
 require("niknaks")
 
+local WantsMaterialFixup = false 
 local flashlightent
 local PrevCombinedLightingMode = false
 if (CLIENT) then
@@ -21,7 +22,7 @@ if (CLIENT) then
 		RunConsoleCommand("r_colorstaticprops", "0")
 		RunConsoleCommand("r_lightinterp", "0")
 		RunConsoleCommand("mat_fullbright", GetConVar( "rtx_experimental_manuallight" ):GetBool())
-		
+		concommand.Add( "rtx_fix_materials", MaterialFixupsAsync)
 
 		pseudoply = ents.CreateClientside( "rtx_pseudoplayer" ) 
 		
@@ -63,8 +64,18 @@ if (CLIENT) then
 		if (GetConVar( "rtx_experimental_manuallight" ):GetBool()) then DoCustomLights() end 
 	end 
 	 
+	function RTXThink() 
+		if (WantsMaterialFixup) then
+			if not matfixco or not coroutine.resume( matfixco ) then
+				matfixco = coroutine.create( MaterialFixups )
+				coroutine.resume( matfixco )
+			end
+		end
+	end
+
 	hook.Add( "InitPostEntity", "RTXReady", RTXLoad)  
 	hook.Add( "PreRender", "RTXPreRender", PreRender) 
+	hook.Add( "Think", "RTXThink", RTXThink) 
 	hook.Add( "PreDrawOpaqueRenderables", "RTXPreRenderOpaque", PreRenderOpaque) 
 	hook.Add( "PreDrawTranslucentRenderables", "RTXPreRenderTranslucent", RTXPreRenderTranslucent) 
 
@@ -108,7 +119,84 @@ function mysplit (inputstr, sep)
 	end
 	return t
 end
+function MaterialFixupsAsync() 
+	print("Requesting Fixup")
+	WantsMaterialFixup = true
+end
 
+function MaterialFixups()
+	MaterialFixupInDir("materials/particle/")
+	--MaterialFixupInDir("materials/particles/")
+	MaterialFixupInDir("materials/effects/")
+	--MaterialFixupInDir("materials/effects/hl2mmod/")
+	WantsMaterialFixup = false 
+end
+
+function MaterialFixupInDir(dir) 
+	
+	print("Starting root material fixup in " .. dir)
+	local _, allfolders = file.Find( dir .. "*" , "GAME" )
+	MaterialFixupInSubDir(dir)
+	for k, v in pairs(allfolders) do
+		MaterialFixupInSubDir(dir .. v .. "/")
+	end
+end
+
+function MaterialFixupInSubDir(dir)
+	print("Fixing materials in " .. dir)
+
+	local allfiles, _ = file.Find( dir .. "*.vmt", "GAME" )
+	for k, v in pairs(allfiles) do
+		FixupMaterial(dir .. v)
+	end
+end
+
+-- Trying to fix these crash the game 
+local bannedmaterials = {
+	"materials/particle/warp3_warp_noz.vmt",
+	"materials/particle/warp4_warp.vmt",
+	"materials/particle/warp4_warp_noz.vmt",
+	"materials/particle/warp5_warp.vmt",
+	"materials/particle/warp5_explosion.vmt",
+	"materials/particle/warp_ripple.vmt"
+}
+function FixupMaterial(filepath)
+	
+	for k, v in pairs(bannedmaterials) do
+		if (v == filepath) then 
+			print("Skipping material " .. filepath)
+			return 
+		end
+	end
+
+	print("Fixing material " .. filepath)
+	local mattrim = (filepath:sub(0, #"materials/") == "materials/") and filepath:sub(#"materials/"+1) or s
+	local matname = mattrim:gsub(".vmt".."$", "");
+	local mat = Material(matname)
+	print("(Shader: " .. mat:GetShader() .. ")")
+	--print("(Texture: " .. mat:GetString("$basetexture") .. ")")
+
+	--coroutine.wait( 0.01 )
+	if (mat:IsError()) then
+		print("This texture loaded as an error? Trying to fix anyways but this shouldn't happen.")
+	end
+	if (mat:GetString("$addself") != nil) then
+		FixupParticleMaterial(mat, filepath)
+	end
+	if (mat:GetString("$basetexture") == nil) then
+		FixupBlankMaterial(mat, filepath)
+	end
+end
+
+function FixupParticleMaterial(mat, filepath)
+	print("Found and fixing particle material in " .. filepath)
+	mat:SetInt( "$additive ", 1 )
+end
+function FixupBlankMaterial(mat, filepath)
+	print("Found and fixing blank material in " .. filepath)
+	local blankmat = Material("debug/particleerror")
+	mat:SetTexture( "$basetexture", blankmat:GetTexture("$basetexture") )
+end
 
 function DrawFix( self, flags )
     if (GetConVar( "mat_fullbright" ):GetBool()) then return end
