@@ -136,7 +136,15 @@ function MaterialFixups()
 	--MaterialFixupInDir("materials/liquid/")
 
 	FixupWater()
-	WantsMaterialFixup = false 
+
+	FixupGUIMaterial(Material("vgui/white"), "materials/vgui/white.vmt")
+	FixupGUIMaterial(Material("vgui/white_additive"), "materials/vgui/white_additive.vmt") 
+	FixupGUIMaterial(Material("vgui/black"), "materials/vgui/black.vmt")
+	FixupGUIMaterial(Material("white"), "white")
+	FixupGUIMaterial(Material("VGUI_White"), "VGUI_White")
+	FixupGUIMaterial(Material("!VGUI_White"), "VGUI_White")
+	FixupGUIMaterial(Material("!white"), "white")
+	WantsMaterialFixup = false
 end
 function FixupWater() 
 	-- todo, find all water brushes and swap their texture.
@@ -225,6 +233,11 @@ end
 function FixupBlankMaterial(mat, filepath)
 	print("[RTX Fixes] - Found and fixing blank material in " .. filepath)
 	local blankmat = Material("debug/particleerror")
+	mat:SetTexture( "$basetexture", blankmat:GetTexture("$basetexture") )
+end
+function FixupGUIMaterial(mat, filepath)
+	print("[RTX Fixes] - Found and fixing vgui material in " .. filepath)
+	local blankmat = Material("rtx/guiwhite")
 	mat:SetTexture( "$basetexture", blankmat:GetTexture("$basetexture") )
 end
 
