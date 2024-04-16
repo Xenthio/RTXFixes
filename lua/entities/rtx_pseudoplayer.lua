@@ -182,7 +182,7 @@ local function MaterialSet()
         render.PopRenderTarget()
 
 	-- load our written texture as a material so its an actual texture.
-        local matimg = Material( "data/" .. texname .. ".png")
+        local matimg = Material( "data/" .. texname .. ".png", "smooth")
         local newertex = matimg:GetTexture( "$basetexture" )
 
 	-- Create our final material, since we need custom keyvalues and we cant do that when we make a material from a png. so instead we copy the texture from above.

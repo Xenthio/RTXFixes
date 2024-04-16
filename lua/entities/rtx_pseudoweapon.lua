@@ -1,6 +1,7 @@
 -- Shitty solution to have a shadow for the player, weapon edition wow
 CreateConVar( "rtx_debug_pseudoplayer", 0, FCVAR_ARCHIVE )
 CreateClientConVar(	"rtx_pseudoweapon_unique_hashes", 0,  true, false)
+CreateClientConVar(	"rtx_pseudoweapon_unique_hashes_downscale", 1,  true, false)
 AddCSLuaFile()
 
 ENT.Type 			= "anim"
@@ -69,6 +70,7 @@ end
 
 local function MaterialSet()
     if (!pseudoweapon) then return end 
+    if (!GetConVar( "rtx_pseudoweapon_unique_hashes" ):GetBool()) then return end 
     pseudoweapon.RenderOverride = PseudoweaponRender 
     for k, v in pairs(pseudoweapon:GetMaterials()) do
         local mat = Material(v)
@@ -93,7 +95,7 @@ local function MaterialSet()
 
         tex:Download()
         local texname = "pseudoweapontexture" .. k .. tex:Width() .. "x" .. tex:Height() -- we need to create one unique for different widths and heights.
-        local newtex = GetRenderTargetEx( texname, tex:Width(), tex:Height(), RT_SIZE_LITERAL, MATERIAL_RT_DEPTH_NONE, 0, 0, IMAGE_FORMAT_RGBA8888 ) 
+        local newtex = GetRenderTargetEx( texname, tex:Width() / GetConVar( "rtx_pseudoweapon_unique_hashes_downscale" ):GetInt(), tex:Height() / GetConVar( "rtx_pseudoweapon_unique_hashes_downscale" ):GetInt(), RT_SIZE_LITERAL, MATERIAL_RT_DEPTH_NONE, 0, 0, IMAGE_FORMAT_RGBA8888 ) 
         render.PushRenderTarget( newtex )
             cam.Start2D()
                 render.OverrideAlphaWriteEnable( true, true )
@@ -134,7 +136,7 @@ local function MaterialSet()
             pictureFile:Close() 
         render.PopRenderTarget()
         
-        local matimg = Material( "data/" .. texname .. ".png")
+        local matimg = Material( "data/" .. texname .. ".png", "smooth")
         local newertex = matimg:GetTexture( "$basetexture" )
         
         local kv = mat:GetKeyValues() 
