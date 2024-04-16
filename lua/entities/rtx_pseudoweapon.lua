@@ -94,8 +94,11 @@ local function MaterialSet()
         matblankalpha:SetTexture( "$basetexture", tex )
 
         tex:Download()
-        local texname = "pseudoweapontexture" .. k .. tex:Width() .. "x" .. tex:Height() -- we need to create one unique for different widths and heights.
-        local newtex = GetRenderTargetEx( texname, tex:Width() / GetConVar( "rtx_pseudoweapon_unique_hashes_downscale" ):GetInt(), tex:Height() / GetConVar( "rtx_pseudoweapon_unique_hashes_downscale" ):GetInt(), RT_SIZE_LITERAL, MATERIAL_RT_DEPTH_NONE, 0, 0, IMAGE_FORMAT_RGBA8888 ) 
+
+        local width = tex:Width() / GetConVar( "rtx_pseudoweapon_unique_hashes_downscale" ):GetInt()
+        local height = tex:Height() / GetConVar( "rtx_pseudoweapon_unique_hashes_downscale" ):GetInt()
+        local texname = "pseudoweapontexture" .. k .. width .. "x" .. height -- we need to create one unique for different widths and heights.
+        local newtex = GetRenderTargetEx( texname, width, height, RT_SIZE_LITERAL, MATERIAL_RT_DEPTH_NONE, 0, 0, IMAGE_FORMAT_RGBA8888 ) 
         render.PushRenderTarget( newtex )
             cam.Start2D()
                 render.OverrideAlphaWriteEnable( true, true )
