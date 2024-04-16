@@ -129,9 +129,15 @@ function MaterialFixups()
 	--MaterialFixupInDir("materials/particles/")
 	MaterialFixupInDir("materials/effects/")
 	--MaterialFixupInDir("materials/effects/hl2mmod/")
+	--MaterialFixupInDir("materials/gm_construct/")
+	--MaterialFixupInDir("materials/liquid/")
+
+	FixupWater()
 	WantsMaterialFixup = false 
 end
-
+function FixupWater() 
+	-- todo, find all water brushes and swap their texture.
+end
 function MaterialFixupInDir(dir) 
 	
 	print("Starting root material fixup in " .. dir)
@@ -180,6 +186,11 @@ function FixupMaterial(filepath)
 	if (mat:IsError()) then
 		print("This texture loaded as an error? Trying to fix anyways but this shouldn't happen.")
 	end
+
+	
+	-- if (mat:GetString("$basetexture") == "dev/water" || mat:GetShader() == "Water_DX60" ) then -- this is water, make it water
+	-- 	FixupWaterMaterial(mat, filepath)
+	-- end
 	if (mat:GetString("$addself") != nil) then
 		FixupParticleMaterial(mat, filepath)
 	end
@@ -188,9 +199,25 @@ function FixupMaterial(filepath)
 	end
 end
 
+-- function FixupWaterMaterial(mat, filepath)
+-- 	print("Found and fixing water material in " .. filepath)
+-- 	if (string.find(filepath, "beneath")) then
+-- 		local waterbeneath = Material("rtx/water_beneath")
+-- 		mat:SetTexture( "$basetexture", waterbeneath:GetTexture("$basetexture") )
+-- 		mat:SetString("$fallbackmaterial", "rtx/water_beneath")
+-- 	else
+-- 		local water = Material("rtx/water")
+-- 		mat:SetTexture( "$basetexture", water:GetTexture("$basetexture") )
+-- 		mat:SetString("$fallbackmaterial", "rtx/water")
+-- 		mat:SetString("$bottommaterial", "rtx/water_beneath")
+-- 	end
+-- 	mat:SetInt( "$additive", 1 )
+-- 	mat:SetInt( "$nocull", 1 )
+-- 	mat:SetFloat( "$texscale", 0.25 )
+-- end
 function FixupParticleMaterial(mat, filepath)
 	print("Found and fixing particle material in " .. filepath)
-	mat:SetInt( "$additive ", 1 )
+	mat:SetInt( "$additive", 1 )
 end
 function FixupBlankMaterial(mat, filepath)
 	print("Found and fixing blank material in " .. filepath)
