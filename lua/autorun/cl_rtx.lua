@@ -129,11 +129,7 @@ end
 
 function MaterialFixups()
 	MaterialFixupInDir("materials/particle/")
-	--MaterialFixupInDir("materials/particles/")
 	MaterialFixupInDir("materials/effects/")
-	--MaterialFixupInDir("materials/effects/hl2mmod/")
-	--MaterialFixupInDir("materials/gm_construct/")
-	--MaterialFixupInDir("materials/liquid/")
 
 	FixupWater()
 
