@@ -101,6 +101,34 @@ if (CLIENT) then
 	--hook.Add( "PreDrawTranslucentRenderables", "RTXSupress2", SupressLighting) 
 	--hook.Add( "PostDrawOpaqueRenderables", "RTXSupress3", SupressLighting) 
 	--hook.Add( "PostDrawTranslucentRenderables", "RTXSupress4", SupressLighting) 
+
+	hook.Add( "PopulateToolMenu", "RTXOptionsClient", function()
+		spawnmenu.AddToolMenuOption( "Utilities", "User", "RTX_Client", "#RTX", "", "", function( panel )
+			panel:ClearControls()
+			
+			panel:ControlHelp( "Thanks for using RTX Remix Fixes! In order to allow me to continue to fix and support this addon while keeping it free, it would be nice if you could PLEASE consider donating to my patreon!" )
+			panel:ControlHelp("https://www.patreon.com/xenthio")
+	
+			panel:CheckBox( "Fix Materials on Load.", "rtx_fixmaterials" )
+			panel:ControlHelp( "Fixup broken and unsupported materials, this fixes things from UI to particles." )
+
+			--panel:AddControl( "ComboBox", { MenuButton = 1, Folder = "presetRTX", Options = { [ "#preset.default" ] = ConVarsDefault }, CVars = table.GetKeys( ConVarsDefault ) } )
+	
+			panel:CheckBox( "Pseudoplayer Enabled", "rtx_pseudoplayer" )
+			panel:ControlHelp( "Pseudoplayer allows you to see your own playermodel, this when marked as a 'Playermodel Texture' in remix allows you to see your own shadow and reflection." )
+			panel:CheckBox( "Pseudoweapon Enabled", "rtx_pseudoweapon" )
+			panel:ControlHelp( "Similar to above, but for the weapon you're holding." )
+
+			panel:CheckBox( "Disable Vertex Lighting.", "rtx_disablevertexlighting" )
+			panel:ControlHelp( "Disables vertex lighting on models and props, these look incorrect with rtx and aren't needed when lightupdaters are enabled." )
+
+			panel:CheckBox( "Light Updaters", "rtx_lightupdater")
+			panel:ControlHelp( "Prevent lights from disappearing in remix, works well when high and 'Supress Light Keeping' in remix settings is on.") 
+
+			qualityslider = panel:NumSlider( "Light Updater Count", "rtx_lightupdater_count", 0, 2048, 0 )
+			panel:ControlHelp( "The amount of light updaters to use, this can be as low as 8 when 'Supress Light Keeping' is off." )
+		end )
+	end )
 end
 
 
