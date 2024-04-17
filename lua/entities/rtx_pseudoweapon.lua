@@ -162,7 +162,7 @@ function ENT:Think()
         pseudoweapon:SetRenderMode(2)
         pseudoweapon:SetColor(Color(255,255,255,0))
     end
-    if GetConVar( "rtx_localweaponshadow" ):GetBool() == false then
+    if GetConVar( "rtx_pseudoweapon" ):GetBool() == false then
         if pseudoweapon then
             pseudoweapon:Remove()
         end

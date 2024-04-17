@@ -36,7 +36,6 @@ function ENT:Initialize()
 
 end
 function ENT:Think()
-    
     self.RenderOverride = nil
 --     --lights = NikNaks.CurrentMap:GetEntities()
 --     lights = NikNaks.CurrentMap:FindByClass( "light" )

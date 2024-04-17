@@ -1,6 +1,7 @@
  
-CreateConVar( "rtx_experimental_lightupdater_count", 8,  FCVAR_ARCHIVE )
-CreateConVar( "rtx_experimental_lightupdater_show", 0,  FCVAR_ARCHIVE )
+CreateConVar( "rtx_lightupdater_count", 512,  FCVAR_ARCHIVE )
+CreateConVar( "rtx_lightupdater_show", 0,  FCVAR_ARCHIVE )
+CreateConVar( "rtx_lightupdater_noupdate", 1,  FCVAR_ARCHIVE )
 AddCSLuaFile()
 
 ENT.Type 			= "anim"
@@ -39,14 +40,20 @@ function ENT:Initialize()
 	self.lights = TableConcat(self.lights,NikNaks.CurrentMap:FindByClass( "light_spot" ))
 
 	self.Updaters = { }
-    for i = 1, math.min(GetConVar( "rtx_experimental_lightupdater_count" ):GetInt(), table.Count(self.lights)) do
+    for i = 1, math.min(GetConVar( "rtx_lightupdater_count" ):GetInt(), table.Count(self.lights)) do
         self.Updaters[i] = ents.CreateClientside( "rtx_lightupdater" ) 
         self.Updaters[i]:Spawn()
     end
 
-    self.doshuffle = true;
+    self.doshuffle = true
+    MovetoPositions(self)
 end
-function ENT:Think()  
+function ENT:Think()
+    if (!GetConVar( "rtx_lightupdater_noupdate" ):GetBool()) then
+        MovetoPositions(self)
+    end
+end
+function MovetoPositions(self)  
     --lights = NikNaks.CurrentMap:GetEntities()
 	--lights = TableConcat(lights,NikNaks.CurrentMap:FindByClass( "light_environment" ))
     
@@ -66,7 +73,7 @@ function ENT:Think()
             updater:SetPos(stash[i].origin - (stash[i].angles:Forward() * 8)) 
             updater:SetRenderMode(2) 
             updater:SetColor(Color(255,255,255,1))
-            if (GetConVar( "rtx_experimental_lightupdater_show" ):GetBool()) then
+            if (GetConVar( "rtx_lightupdater_show" ):GetBool()) then
                 updater:SetRenderMode(0) 
             end
         end

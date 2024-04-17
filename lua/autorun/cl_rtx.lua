@@ -1,10 +1,18 @@
-CreateClientConVar(	"rtx_localplayershadow", 1,  true, false)
-CreateClientConVar(	"rtx_localweaponshadow", 0,  true, false)
+CreateClientConVar(	"rtx_pseudoplayer", 1,  true, false)
+CreateClientConVar(	"rtx_pseudoweapon", 1,  true, false)
+
 CreateClientConVar(	"rtx_disablevertexlighting", 1,  true, false) 
 CreateClientConVar(	"rtx_disablevertexlighting_old", 0,  true, false) 
+
+CreateClientConVar(	"rtx_fixmaterials", 1,  true, false) 
+
+CreateClientConVar(	"rtx_lightupdater", 1,  true, false) 
+
 CreateClientConVar(	"rtx_experimental_manuallight", 0,  true, false) 
-CreateClientConVar(	"rtx_experimental_lightupdater", 1,  true, false) 
 CreateClientConVar(	"rtx_experimental_mightcrash_combinedlightingmode", 0,  false, false) 
+
+CreateClientConVar(	"rtx_disable_when_unsupported", 1,  false, false) 
+
 require("niknaks")
 
 local WantsMaterialFixup = false 
@@ -13,16 +21,16 @@ local PrevCombinedLightingMode = false
 if (CLIENT) then
 	function RTXLoad()  
 		print("[RTX Fixes] - Initalising Client")
-		if (render.SupportsVertexShaders_2_0()) then
-			print("[RTX Fixes] - No RTX Remix Detected! Disabling!")
+		if (render.SupportsVertexShaders_2_0() && GetConVar( "rtx_disable_when_unsupported" ):GetBool()) then
+			print("[RTX Fixes] - No RTX Remix Detected! Disabling! (You can force enable by changing rtx_disable_when_unsupported to 0 and reloading)")
 			return
 		end
 		RunConsoleCommand("r_radiosity", "0")
-		RunConsoleCommand("r_PhysPropStaticLighting", "0")
+		RunConsoleCommand("r_PhysPropStaticLighting", "1")
 		RunConsoleCommand("r_colorstaticprops", "0")
 		RunConsoleCommand("r_lightinterp", "0")
 		RunConsoleCommand("mat_fullbright", GetConVar( "rtx_experimental_manuallight" ):GetBool())
-		concommand.Add( "rtx_fix_materials", MaterialFixupsAsync)
+		concommand.Add( "rtx_fixmaterials_fixnow", MaterialFixups)
 
 		pseudoply = ents.CreateClientside( "rtx_pseudoplayer" ) 
 		
@@ -31,7 +39,7 @@ if (CLIENT) then
 		flashlightent:Spawn() 
 
 		-- the definition of insanity
-		if (GetConVar( "rtx_experimental_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdatermanager" ) b:Spawn() end  
+		if (GetConVar( "rtx_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdatermanager" ) b:Spawn() end  
 		pseudoply:Spawn() 
 
 		ApplyRenderOverrides()
@@ -39,7 +47,8 @@ if (CLIENT) then
 		halo.Add = function() end
 
 		-- start fixing up materials, can freeze the game :(
-		WantsMaterialFixup = true
+		if (GetConVar( "rtx_fixmaterials" ):GetBool()) then MaterialFixups() end
+		--WantsMaterialFixup = true
 	end 
 	
 	function PreRender()   
@@ -67,18 +76,18 @@ if (CLIENT) then
 		if (GetConVar( "rtx_experimental_manuallight" ):GetBool()) then DoCustomLights() end 
 	end 
 	 
-	function RTXThink() 
-		if (WantsMaterialFixup) then
-			if not matfixco or not coroutine.resume( matfixco ) then
-				matfixco = coroutine.create( MaterialFixups )
-				coroutine.resume( matfixco )
-			end
-		end
-	end
+	-- function RTXThink() 
+	-- 	if (WantsMaterialFixup) then
+	-- 		if not matfixco or not coroutine.resume( matfixco ) then
+	-- 			matfixco = coroutine.create( MaterialFixups )
+	-- 			coroutine.resume( matfixco )
+	-- 		end
+	-- 	end
+	-- end
 
 	hook.Add( "InitPostEntity", "RTXReady", RTXLoad)  
 	hook.Add( "PreRender", "RTXPreRender", PreRender) 
-	hook.Add( "Think", "RTXThink", RTXThink) 
+	--hook.Add( "Think", "RTXThink", RTXThink) 
 	hook.Add( "PreDrawOpaqueRenderables", "RTXPreRenderOpaque", PreRenderOpaque) 
 	hook.Add( "PreDrawTranslucentRenderables", "RTXPreRenderTranslucent", RTXPreRenderTranslucent) 
 
@@ -122,10 +131,10 @@ function mysplit (inputstr, sep)
 	end
 	return t
 end
-function MaterialFixupsAsync() 
-	print("[RTX Fixes] - Requesting Fixup")
-	WantsMaterialFixup = true
-end
+--function MaterialFixupsAsync() 
+	--print("[RTX Fixes] - Requesting Fixup")
+	--WantsMaterialFixup = true
+--end
 
 function MaterialFixups()
 	MaterialFixupInDir("materials/particle/")
@@ -141,7 +150,7 @@ function MaterialFixups()
 	FixupGUIMaterial(Material("VGUI_White"), "VGUI_White")
 	FixupGUIMaterial(Material("!VGUI_White"), "VGUI_White") -- Dynamically created in vgui2.dll I think.
 	FixupGUIMaterial(Material("!white"), "white")
-	WantsMaterialFixup = false
+	--WantsMaterialFixup = false
 end
 function FixupWater() 
 	-- todo, find all water brushes and swap their texture.

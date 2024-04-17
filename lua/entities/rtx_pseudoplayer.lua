@@ -210,13 +210,13 @@ function ENT:Think()
         pseudoplayer:SetRenderMode(2)
         pseudoplayer:SetColor(Color(255,255,255,0))
     end
-    if GetConVar( "rtx_localplayershadow" ):GetBool() == false then
+    if GetConVar( "rtx_pseudoplayer" ):GetBool() == false then
         if pseudoplayer then
             pseudoplayer:Remove()
         end
         self:Remove()
     end
-    if GetConVar( "rtx_localweaponshadow" ):GetBool() == false then
+    if GetConVar( "rtx_pseudoweapon" ):GetBool() == false then
         if (pseudoweapon and pseudoweapon:IsValid()) then
             pseudoweapon:Remove()
         end
