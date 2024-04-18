@@ -45,11 +45,12 @@ function ENT:Initialize()
         self.Updaters[i]:Spawn()
     end
 
+    self.shouldslowupdate = false
     self.doshuffle = true
     MovetoPositions(self)
 end
 function ENT:Think()
-    if (GetConVar( "rtx_lightupdater_slowupdate" ):GetBool()) then
+    if (GetConVar( "rtx_lightupdater_slowupdate" ):GetBool() && self.shouldslowupdate) then
         self:NextThink( CurTime() + 10 )
         self:SetNextClientThink( CurTime() + 10 )
     end
@@ -69,6 +70,7 @@ function MovetoPositions(self)
     end
     for i, updater in pairs(self.Updaters) do
         if (stash[i] == nil || GetConVar( "mat_fullbright" ):GetBool()) then
+            self.shouldslowupdate = true
             table.remove( self.Updaters, i )
             updater:Remove() 
         else
