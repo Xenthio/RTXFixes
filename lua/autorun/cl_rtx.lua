@@ -295,7 +295,7 @@ function DrawFix( self, flags )
 
 end
 function ApplyRenderOverride(ent)
-	if (v:GetClass() != "procedural_shard") then ent.RenderOverride = DrawFix end
+	if (ent:GetClass() != "procedural_shard") then ent.RenderOverride = DrawFix end
 end
 function ApplyRenderOverrides() 
 
