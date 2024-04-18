@@ -221,7 +221,7 @@ function FixupMaterial(filepath)
 	end
 
 	--print("[RTX Fixes] - Fixing material " .. filepath)
-	local mattrim = (filepath:sub(0, #"materials/") == "materials/") and filepath:sub(#"materials/"+1) or s
+	local mattrim = (filepath:sub(0, #"materials/") == "materials/") and filepath:sub(#"materials/"+1) or filepath
 	local matname = mattrim:gsub(".vmt".."$", "");
 	local mat = Material(matname)
 	--print("[RTX Fixes] - (Shader: " .. mat:GetShader() .. ")")
