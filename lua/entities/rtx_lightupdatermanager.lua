@@ -51,6 +51,7 @@ end
 function ENT:Think()
     if (GetConVar( "rtx_lightupdater_slowupdate" ):GetBool()) then
         self:NextThink( CurTime() + 10 )
+        self:SetNextClientThink( CurTime() + 10 )
     end
     MovetoPositions(self)
 end
