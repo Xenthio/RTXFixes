@@ -1,7 +1,7 @@
  
 CreateConVar( "rtx_lightupdater_count", 512,  FCVAR_ARCHIVE )
 CreateConVar( "rtx_lightupdater_show", 0,  FCVAR_ARCHIVE )
-CreateConVar( "rtx_lightupdater_noupdate", 1,  FCVAR_ARCHIVE )
+CreateConVar( "rtx_lightupdater_slowupdate", 1,  FCVAR_ARCHIVE )
 AddCSLuaFile()
 
 ENT.Type 			= "anim"
@@ -49,9 +49,10 @@ function ENT:Initialize()
     MovetoPositions(self)
 end
 function ENT:Think()
-    if (!GetConVar( "rtx_lightupdater_noupdate" ):GetBool()) then
-        MovetoPositions(self)
+    if (GetConVar( "rtx_lightupdater_slowupdate" ):GetBool()) then
+        self:NextThink( CurTime() + 10 )
     end
+    MovetoPositions(self)
 end
 function MovetoPositions(self)  
     --lights = NikNaks.CurrentMap:GetEntities()
