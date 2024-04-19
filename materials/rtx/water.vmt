@@ -14,7 +14,7 @@
 	// You must have this. . this is a material that is practically identical
 	// to this one in most cases.  It must have $reflecttexture disabled, and
 	// you can set for params uniquely for underwater.
-	"$bottommaterial" "rtx/water_beneath"
+	//"$bottommaterial" "rtx/water_beneath"
 
 	// This is needed for the proxy below which animates the normal map, etc.
 	"$bumpframe" "0"
