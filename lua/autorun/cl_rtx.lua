@@ -31,6 +31,14 @@ if (CLIENT) then
 		RunConsoleCommand("r_lightinterp", "0")
 		RunConsoleCommand("mat_fullbright", GetConVar( "rtx_experimental_manuallight" ):GetBool())
 		concommand.Add( "rtx_fixmaterials_fixnow", MaterialFixups)
+		concommand.Add( "rtx_force_no_fullbright", ForceLighting)
+		-- cvars.AddChangeCallback("mat_fullbright", function(convar_name, value_old, value_new)
+		-- 	print(convar_name, value_old, value_new)
+		-- 	if (value_new == "1") then 
+		-- 		print("no >:(")
+		-- 		RunConsoleCommand("mat_fullbright", "0")
+		-- 	end
+		-- end)
 
 		pseudoply = ents.CreateClientside( "rtx_pseudoplayer" ) 
 		
@@ -42,7 +50,7 @@ if (CLIENT) then
 		if (GetConVar( "rtx_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdatermanager" ) b:Spawn() end  
 		pseudoply:Spawn() 
 
-		ApplyRenderOverrides()
+		FixupEntities()
 
 		halo.Add = function() end
 
@@ -50,6 +58,10 @@ if (CLIENT) then
 		if (GetConVar( "rtx_fixmaterials" ):GetBool()) then MaterialFixups() end
 		--WantsMaterialFixup = true
 	end 
+
+	function ForceLighting() 
+		render.SetLightingMode( 0 )
+	end
 	
 	function PreRender()   
 		
@@ -295,15 +307,22 @@ function DrawFix( self, flags )
 
 end
 function ApplyRenderOverride(ent)
-	if (ent:GetClass() != "procedural_shard") then ent.RenderOverride = DrawFix end
+	ent.RenderOverride = DrawFix 
 end
-function ApplyRenderOverrides() 
+function TryDoReplacements(ent)
+	-- We can replace or add onto entities we need to change here.
+end
+function FixupEntities() 
 
-	hook.Add( "OnEntityCreated", "RTXApplyRenderOverrides", ApplyRenderOverride)
+	hook.Add( "OnEntityCreated", "RTXEntityFixups", FixupEntity)
 	for k, v in pairs(ents.GetAll()) do
-		ApplyRenderOverride(v)
+		FixupEntity(v)
 	end
 
+end
+function FixupEntity(ent)
+	TryDoReplacements(ent)
+	if (ent:GetClass() != "procedural_shard") then ApplyRenderOverride(ent) end
 end
 
 function convertlight(v) 
