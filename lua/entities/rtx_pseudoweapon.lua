@@ -40,6 +40,8 @@ function ENT:Initialize()
 end
 
 local materialtable = {}
+
+-- We use this to override materials in dx7 mode.
 function PseudoweaponRender(self) 
     
 
@@ -67,15 +69,20 @@ function PseudoweaponRender(self)
     
 end
 
-
+-- This fucking piece of shit allows us to have a slighly modified texture for the local players own weapons.
+-- This is so we can have it be invisible but still cast shadows and draw in reflections, while not making other weapons invisible.
 local function MaterialSet()
     if (!pseudoweapon) then return end 
-    if (!GetConVar( "rtx_pseudoweapon_unique_hashes" ):GetBool()) then return end 
+    if (!GetConVar( "rtx_pseudoweapon_unique_hashes" ):GetBool()) then return end
+
+    
+    -- Workaround for issue: https://github.com/Facepunch/garrysmod-issues/issues/5826
     pseudoweapon.RenderOverride = PseudoweaponRender 
     for k, v in pairs(pseudoweapon:GetMaterials()) do
         local mat = Material(v)
         local tex = mat:GetTexture( "$basetexture" )   
 
+	-- create a copy so we can have the texture be drawn unlit.
         local matblank = CreateMaterial( "pseudoweaponmaterialtemp" .. k, "UnlitGeneric", {
             ["$basetexture"] = "color/white",
             ["$model"] = 1,
@@ -83,6 +90,7 @@ local function MaterialSet()
             ["$vertexalpha"] = 0,
             ["$vertexcolor"] = 0,  
         } )
+	-- we need to create a second material so we can write the alpha, since gmod doesnt do it properly for some reason.
         local matblankalpha = CreateMaterial( "pseudoweaponmaterialtempalpha" .. k, "UnlitGeneric", {
             ["$basetexture"] = "color/white",
             ["$model"] = 1,
