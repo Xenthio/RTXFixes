@@ -167,7 +167,7 @@ local function MaterialSet()
 				render.OverrideAlphaWriteEnable( false )
 			cam.End2D()
 
-			-- We cant take our rendertarget and convert it to a texture, so we need to be evil and write to disk :(
+			-- We cant take our rendertarget and convert it to a non rendertarget texture, so we need to be evil and write to disk :(
 			local data = render.Capture({
 				format = "png",
 				x = 0, 
