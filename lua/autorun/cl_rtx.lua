@@ -139,6 +139,7 @@ if (CLIENT) then
 
 			qualityslider = panel:NumSlider( "Light Updater Count", "rtx_lightupdater_count", 0, 2048, 0 )
 			panel:ControlHelp( "The amount of light updaters to use, this can be as low as 8 when 'Supress Light Keeping' is off." )
+			panel:ControlHelp( "Requires map reload to take affect!" )
 		end )
 	end )
 end
