@@ -73,7 +73,7 @@ if (CLIENT) then
 			render.SuppressEngineLighting(false)
 		end   
 		if (GetConVar( "rtx_experimental_manuallight" ):GetBool()) then DoCustomLights() end  
-		--PrintTable(stash[1])
+		
 	end 
 	function PreRenderOpaque()  
 		if (render.SupportsVertexShaders_2_0()) then 
