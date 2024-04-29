@@ -133,35 +133,34 @@ local function MaterialSet()
 					h 	= 1,
 				} 
 				draw.TexturedQuad( texturedQuadStructure )
-				 
+
 				--render.SuppressEngineLighting( false )
 				render.OverrideAlphaWriteEnable( false )
 			cam.End2D()
-			 
-			render.SetWriteDepthToDestAlpha( false )
-			-- We cant take our rendertarget and convert it to a texture, so we need to be evil and write to disk :(
+
+			-- We cant take our rendertarget and convert it to a non rendertarget texture, so we need to be evil and write to disk :(
 			local data = render.Capture({
 				format = "png",
-				x = 0, 
-				y = 0, 
-				h = newtex:Height(), 
+				x = 0,
+				y = 0,
+				h = newtex:Height(),
 				w = newtex:Width(),
 				alpha = true
-			})	
+			})
 			local pictureFile = file.Open( texname .. ".png", "wb", "DATA" )	
 			pictureFile:Write( data )
 			pictureFile:Close() 
 		render.PopRenderTarget()
-		
+
 		-- load our written texture as a material so its an actual texture.
 		local matimg = Material( "data/" .. texname .. ".png", "smooth")
 		local newertex = matimg:GetTexture( "$basetexture" )
-		
+
 		-- Create our final material, since we need custom keyvalues and we cant do that when we make a material from a png. so instead we copy the texture from above.
 		local kv = mat:GetKeyValues() 
 		local matlua = CreateMaterial( "pseudoweaponmaterial" .. k, mat:GetShader(), kv )
 		matlua:SetTexture( "$basetexture", newertex)
-		
+
 		-- add them to the table, we apply the new material every frame in the RenderOverride, since Entity:SetMaterial() is broken in dx7 mode.
 		-- Workaround for issue: https://github.com/Facepunch/garrysmod-issues/issues/5826
 		materialtable[k] = matlua
