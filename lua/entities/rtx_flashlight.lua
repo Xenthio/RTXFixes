@@ -21,7 +21,7 @@ function ENT:Initialize()
         
         self.updater:SetRenderMode(2) 
         self.updater:SetColor(Color(255,255,255,1))
-        self.updater:SetModel("models/hunter/blocks/cube05x05x05.mdl") 
+        self.updater:SetModel("models/hunter/plates/plate.mdl") 
         self.updater:SetPos( self:GetPos() + (self:GetOwner():GetAimVector()* 90) )
         self.updater:SetParent( self )
 

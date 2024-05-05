@@ -13,7 +13,7 @@ ENT.AdminSpawnable	= false
   
 function ENT:Initialize() 
     print("[RTX Fixes] - Flashlight Initialised.")
-    self:SetModel("models/hunter/blocks/cube075x2x075.mdl") 
+    self:SetModel("models/hunter/plates/plate.mdl") 
     self:SetRenderMode(2) 
     self:SetColor(Color(255,255,255,1))
     --self:PhysicsInit(SOLID_VPHYSICS)
