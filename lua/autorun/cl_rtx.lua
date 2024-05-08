@@ -21,6 +21,7 @@ local PrevCombinedLightingMode = false
 if (CLIENT) then
 	function RTXLoad()  
 		print("[RTX Fixes] - Initalising Client")
+	// todo: add manual disable 
 		if (render.SupportsVertexShaders_2_0() && GetConVar( "rtx_disable_when_unsupported" ):GetBool()) then
 			print("[RTX Fixes] - No RTX Remix Detected! Disabling! (You can force enable by changing rtx_disable_when_unsupported to 0 and reloading)")
 			return
