@@ -246,7 +246,7 @@ function FixupMaterial(filepath)
 		print("[RTX Fixes] - This texture loaded as an error? Trying to fix anyways but this shouldn't happen.")
 	end
 
-	
+	-- TODO: How to fetch water in a level?
 	-- if (mat:GetString("$basetexture") == "dev/water" || mat:GetShader() == "Water_DX60" ) then -- this is water, make it water
 	-- 	FixupWaterMaterial(mat, filepath)
 	-- end
