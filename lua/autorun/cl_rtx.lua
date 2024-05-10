@@ -196,6 +196,9 @@ function MaterialFixups()
 end
 function FixupWater() 
 	-- todo, find all water brushes and swap their texture.
+	-- sorry this is tirning into note taking area, but here's what needs to be done
+	-- fetch water, somehow (not a brush entity as far as i know)
+	-- replace the water (replacement method doesnt seem to like dx fallbacks)
 end
 function MaterialFixupInDir(dir) 
 	
