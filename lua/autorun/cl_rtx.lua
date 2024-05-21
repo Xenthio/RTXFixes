@@ -21,6 +21,7 @@ local PrevCombinedLightingMode = false
 if (CLIENT) then
 	function RTXLoad()  
 		print("[RTX Fixes] - Initalising Client")
+	// todo: add manual disable 
 		if (render.SupportsVertexShaders_2_0() && GetConVar( "rtx_disable_when_unsupported" ):GetBool()) then
 			print("[RTX Fixes] - No RTX Remix Detected! Disabling! (You can force enable by changing rtx_disable_when_unsupported to 0 and reloading)")
 			return
@@ -195,6 +196,9 @@ function MaterialFixups()
 end
 function FixupWater() 
 	-- todo, find all water brushes and swap their texture.
+	-- sorry this is tirning into note taking area, but here's what needs to be done
+	-- fetch water, somehow (not a brush entity as far as i know)
+	-- replace the water (replacement method doesnt seem to like dx fallbacks)
 end
 function MaterialFixupInDir(dir) 
 	
@@ -245,7 +249,7 @@ function FixupMaterial(filepath)
 		print("[RTX Fixes] - This texture loaded as an error? Trying to fix anyways but this shouldn't happen.")
 	end
 
-	
+	-- TODO: How to fetch water in a level?
 	-- if (mat:GetString("$basetexture") == "dev/water" || mat:GetShader() == "Water_DX60" ) then -- this is water, make it water
 	-- 	FixupWaterMaterial(mat, filepath)
 	-- end
