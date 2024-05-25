@@ -18,6 +18,7 @@ require("niknaks")
 local WantsMaterialFixup = false 
 local flashlightent
 local PrevCombinedLightingMode = false
+concommand.Add( "rtx_fixnow", RTXLoad())
 if (CLIENT) then
 	function RTXLoad()  
 		print("[RTX Fixes] - Initalising Client")
