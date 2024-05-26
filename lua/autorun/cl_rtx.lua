@@ -19,7 +19,7 @@ local WantsMaterialFixup = false
 local flashlightent
 local PrevCombinedLightingMode = false
 if (CLIENT) then
-	function RTXLoad()  
+	function RTXLoad()
 		print("[RTX Fixes] - Initalising Client")
 	// todo: add manual disable 
 		if (render.SupportsVertexShaders_2_0() && GetConVar( "rtx_disable_when_unsupported" ):GetBool()) then
@@ -43,9 +43,9 @@ if (CLIENT) then
 
 		pseudoply = ents.CreateClientside( "rtx_pseudoplayer" ) 
 		
-		flashlightent = ents.CreateClientside( "rtx_flashlight_ent" ) 
+		flashlightent = ents.CreateClientside( "rtx_flashlight_ent" )
 		flashlightent:SetOwner(ply)
-		flashlightent:Spawn() 
+		flashlightent:Spawn()
 
 		-- the definition of insanity
 		if (GetConVar( "rtx_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdatermanager" ) b:Spawn() end  
@@ -59,11 +59,12 @@ if (CLIENT) then
 		if (GetConVar( "rtx_fixmaterials" ):GetBool()) then MaterialFixups() end
 		--WantsMaterialFixup = true
 	end 
-	concommand.Add( "rtx_fixnow", RTXLoad())
 	function ForceLighting() 
 		render.SetLightingMode( 0 )
 	end
 	
+	concommand.Add( "rtx_fixnow", RTXLoad)
+
 	function PreRender()   
 		
 		if (render.SupportsVertexShaders_2_0()) then 
