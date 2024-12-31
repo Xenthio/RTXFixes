@@ -1,5 +1,5 @@
 -- Water Texture Replacer
--- This script detects and replaces all water textures with a specified texture
+--  This script detects and replaces all water textures with a specified texture
 
 local function FormatMaterialPath(path)
     path = path:gsub("^materials/", "")
