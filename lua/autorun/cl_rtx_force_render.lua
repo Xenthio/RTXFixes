@@ -2,7 +2,7 @@ if not CLIENT then return end
 
 -- ConVars
 local CONVARS = {
-    ENABLED = CreateClientConVar("rtx_force_render", "1", true, false, "Forces custom mesh rendering of map"),
+    ENABLED = CreateClientConVar("rtx_force_render", "0", true, false, "Forces custom mesh rendering of map"),
     DEBUG = CreateClientConVar("rtx_force_render_debug", "0", true, false, "Shows debug info for mesh rendering"),
     CHUNK_SIZE = CreateClientConVar("rtx_chunk_size", "512", true, false, "Size of chunks for mesh combining")
 }
