@@ -4,9 +4,7 @@ CreateClientConVar(	"rtx_pseudoweapon", 1,  true, false)
 CreateClientConVar(	"rtx_disablevertexlighting", 1,  true, false) 
 CreateClientConVar(	"rtx_disablevertexlighting_old", 0,  true, false) 
 
-CreateClientConVar(	"rtx_fixmaterials", 1,  true, false) 
-
-CreateClientConVar(	"rtx_lightupdater", 1,  true, false) 
+CreateClientConVar(	"rtx_fixmaterials", 1,  true, false)
 
 CreateClientConVar(	"rtx_experimental_manuallight", 0,  true, false) 
 CreateClientConVar(	"rtx_experimental_mightcrash_combinedlightingmode", 0,  false, false) 
@@ -47,8 +45,6 @@ if (CLIENT) then
 		flashlightent:SetOwner(ply)
 		flashlightent:Spawn()
 
-		-- the definition of insanity
-		if (GetConVar( "rtx_lightupdater" ):GetBool()) then local b = ents.CreateClientside( "rtx_lightupdatermanager" ) b:Spawn() end  
 		pseudoply:Spawn() 
 
 		FixupEntities()
@@ -139,9 +135,9 @@ if (CLIENT) then
 			panel:CheckBox( "Light Updaters", "rtx_lightupdater")
 			panel:ControlHelp( "Prevent lights from disappearing in remix, works well when high and 'Supress Light Keeping' in remix settings is on.") 
 
-			qualityslider = panel:NumSlider( "Light Updater Count", "rtx_lightupdater_count", 0, 2048, 0 )
-			panel:ControlHelp( "The amount of light updaters to use, this can be as low as 8 when 'Supress Light Keeping' is off." )
-			panel:ControlHelp( "Requires map reload to take affect!" )
+			--qualityslider = panel:NumSlider( "Light Updater Count", "rtx_lightupdater_count", 0, 2048, 0 )
+			--panel:ControlHelp( "The amount of light updaters to use, this can be as low as 8 when 'Supress Light Keeping' is off." )
+			--panel:ControlHelp( "Requires map reload to take affect!" )
 		end )
 	end )
 end
