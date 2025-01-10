@@ -10,34 +10,86 @@ end
 local function IsWaterMaterial(mat)
     if not mat or mat:IsError() then return false end
 
+    local isWater = false
+    local matName = mat:GetName():lower()
+    
     -- Check material validity
     local shader = mat:GetShader()
     if shader then
         shader = shader:lower()
         if shader:find("water") or shader:find("refract") then
-            return true
+            isWater = true
         end
     end
 
-    -- Get material name and check for common water keywords
-    local matName = mat:GetName():lower()
+    -- Check for water keywords in name
     if matName:find("water") or matName:find("liquid") then
-        return true
+        isWater = true
     end
 
-    -- Safely check surface property
+    -- Check surface property
     local surfaceProp = mat:GetString("$surfaceprop")
     if surfaceProp and surfaceProp:lower() == "water" then
-        return true
+        isWater = true
     end
 
-    -- Check for water-specific material flags
+    -- Check water flag
     local flags = mat:GetInt("$flags")
-    if flags and bit.band(flags, 0x2000) ~= 0 then -- MATERIAL_VAR_WATER flag
-        return true
+    if flags and bit.band(flags, 0x2000) ~= 0 then
+        isWater = true
     end
 
-    return false
+    -- If it's a water material, log all its properties
+    if isWater then
+        print("\n[Water Replacer] Found water material:", matName)
+        print("  Shader:", shader or "None")
+        print("  Surface Property:", surfaceProp or "None")
+        print("  Flags:", flags or "None")
+        
+        -- Log all texture parameters
+        local textureParams = {
+            "$basetexture",
+            "$basetexture2",
+            "$bumpmap",
+            "$normalmap",
+            "$dudvmap",
+            "$reflecttexture",
+            "$refracttexture",
+            "$bottommaterial",
+            "$underwateroverlay"
+        }
+        
+        print("  Textures:")
+        for _, param in ipairs(textureParams) do
+            local tex = mat:GetTexture(param)
+            if tex then
+                print(string.format("    %s: %s", param, tex:GetName()))
+            end
+        end
+        
+        -- Log other common material parameters
+        local params = {
+            "$alpha",
+            "$translucent",
+            "$nodraw",
+            "$nofog",
+            "$reflectivity",
+            "$refracttint",
+            "$refractamount",
+            "$scale"
+        }
+        
+        print("  Parameters:")
+        for _, param in ipairs(params) do
+            local value = mat:GetString(param)
+            if value and value ~= "" then
+                print(string.format("    %s: %s", param, value))
+            end
+        end
+        print("--------------------------------")
+    end
+
+    return isWater
 end
 
 local function ValidateTexture(texturePath)
@@ -138,13 +190,41 @@ local function ReplaceWaterTextures(newTexturePath)
         local success, result = pcall(function()
             local mat = Material(matPath)
             if IsWaterMaterial(mat) then
+                -- Create a new material with LightmappedGeneric shader
+                local newMatName = "water_replace_" .. os.time() .. "_" .. math.random(1000, 9999)
+                local newMat = Material(newMatName, "LightmappedGeneric", {
+                    ["$basetexture"] = replacementBaseTexture:GetName()
+                })
+                
+                -- Override the original material
                 mat:SetTexture("$basetexture", replacementBaseTexture)
+                mat:SetShader("LightmappedGeneric")
+                
+                -- Remove all other parameters
+                local paramsToRemove = {
+                    "$bumpmap", "$normalmap", "$envmap", "$reflectivity",
+                    "$refracttexture", "$refracttint", "$refractamount",
+                    "$fresnelreflection", "$bottommaterial", "$underwateroverlay",
+                    "$dudvmap", "$fogcolor", "$fogstart", "$fogend"
+                }
+                
+                for _, param in ipairs(paramsToRemove) do
+                    mat:SetUndefined(param)
+                end
+                
+                -- Set basic parameters
                 mat:SetFloat("$alpha", 1)
                 mat:SetInt("$translucent", 0)
                 mat:SetInt("$nodraw", 0)
-                mat:SetInt("$nofog", 1)  -- Disable fog on water materials
+                mat:SetInt("$nofog", 0)
+                
                 replacedCount = replacedCount + 1
-                print(string.format("[Water Replacer] Replaced texture: %s", matPath))
+                print(string.format("[Water Replacer] Replaced texture: %s with LightmappedGeneric shader", matPath))
+                
+                -- Log the new material state
+                print("  New material settings:")
+                print("    Shader: LightmappedGeneric")
+                print("    BaseTexture:", replacementBaseTexture:GetName())
             end
         end)
         
@@ -156,12 +236,12 @@ local function ReplaceWaterTextures(newTexturePath)
     -- Fix water nodraws
     FixWaterNodraws()
     
-    print(string.format("[Water Replacer] Completed! Replaced %d water textures.", replacedCount))
+    print(string.format("[Water Replacer] Completed! Replaced %d water textures with LightmappedGeneric shader.", replacedCount))
 end
 
 -- Configuration
 local config = {
-    replacementTexture = "nature/water_dx70",
+    replacementTexture = "dev/dev_monitor",
     initDelay = 1.0
 }
 
